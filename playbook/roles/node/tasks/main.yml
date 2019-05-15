@@ -1,17 +1,15 @@
 ---
 
 - block:
-  
+
   - name: disable selinux
     selinux:
       state: disabled
 
   - name: install yum-utils
     yum:
-     name: {{ item }}
-     state: installed
-    with_items:
-     - yum-utils
+      name: yum-utils
+      state: installed
 
   - name: Disable repos
     command: yum-config-manager --disable \*
@@ -23,49 +21,43 @@
 
   - name: install node packages - i (non-gpu)
     yum:
-     name: {{ item }}
-     state: installed
+      name: {{ item }}
+      state: installed
     with_items:
-     - yum-utils
-     - wget
-     - pciutils
-     - mlocate
-     - net-tools
-     - nmap
-     - htop
-     - gdisk
-     - yum-utils
-     - nfs-utils
-     - kernel-devel
-     - ntp
+      - wget
+      - pciutils
+      - mlocate
+      - net-tools
+      - nmap
+      - htop
+      - gdisk
+      - nfs-utils
+      - kernel-devel
+      - ntp
 
-  #NetworkManager dealt with in kickstart
-  - name: disable services
+  # NetworkManager dealt with in kickstart
+  - name: disable chronyd service
     systemd:
-     name: {{ item }}
-     state: stopped
-     enabled: no
-    with_items:
-     - chronyd
+      name: chronyd
+      state: stopped
+      enabled: 'no'
 
-  - name: enable services
+  - name: enable ntpd service
     systemd:
-     name: {{ item }}
-     state: started
-     enabled: yes
-    with_items:
-     - ntpd
+      name: ntpd
+      state: started
+      enabled: 'yes'
 
   - name: yum clean all
     command: yum clean all
 
   - name: install node packages - ib (non-gpu)
     yum:
-     name: {{ item }}
-     state: installed
+      name: {{ item }}
+      state: installed
     with_items:
-     - kernel-ml
-     - kernel-ml-devel
+      - kernel-ml
+      - kernel-ml-devel
 
   - name: edit grub
     command: sed -i 's/rhgb/rhgb/transparent_hugepage=never/' /etc/default/grub
@@ -73,32 +65,31 @@
   - name: run package-cleanup
     command: package-cleanup --oldkernels --count=1
 
-  #REBOOT is here in doc
-  
-  #NON GPU section from doc
+  # REBOOT is here in doc
+
+  # NON GPU section from doc
 
   - name: install node packages - ii (non-gpu)
     yum:
-     name: {{ item }}
-     state: installed
+      name: {{ item }}
+      state: installed
     with_items:
-     - yum-utils
-     - device-mapper-persistent-data
-     - lvm2
-     - wget
+      - device-mapper-persistent-data
+      - lvm2
+      - wget
 
   - name: Add repository for docker
     command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
   - name: install docker-ce
     yum:
-     name: docker-ce
-     state: installed
+      name: docker-ce
+      state: installed
 
   - name: Download and write k8s.conf
-      get_url:
-        url: https://gitlab.nautilus.optiputer.net/prp/kernel/raw/master/k8s.conf
-        dest: /etc/sysctl.d/k8s.conf
+    get_url:
+      url: https://gitlab.nautilus.optiputer.net/prp/kernel/raw/master/k8s.conf
+      dest: /etc/sysctl.d/k8s.conf
 
   - name: sysctl --system
     command: sysctl --system
@@ -108,14 +99,12 @@
 
   - name: enable and restart docker
     systemd:
-     name: {{ item }}
-     state: restarted
-     enabled: yes
-    with_items:
-     - docker
+      name: docker
+      state: restarted
+      enabled: 'yes'
 
    # Add stanza to do kubernetes repo file here
-   
+
    # Fail2bn handled in seperate role
 
   become: 'True'

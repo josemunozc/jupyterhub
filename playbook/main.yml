@@ -1,0 +1,8 @@
+---
+
+- name: run common roles
+  hosts: all
+  roles:
+    - node
+    - fail2ban
+...

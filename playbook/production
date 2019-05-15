@@ -1,0 +1,7 @@
+#physical servers
+[P_servers]
+stashcache.gravity.cf.ac.uk ansible_ssh_host=131.251.129.34 ansible_ssh_port=22 ansible_ssh_user=ansible ansible_ssh_private_key_file=/home/ansible/.ssh/deploy_id_rsa
+
+#storage server
+[stashcache_server]
+stashcache.gravity.cf.ac.uk

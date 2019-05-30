@@ -1,0 +1,13 @@
+---
+
+- name: reminder for grub settings
+  debug:
+    msg: 
+    - "If this is first run have you done(?):"
+    - "grep \"^menuentry\" /boot/grub2/grub.cfg | cut -d \"'\" -f2"
+    - "grub2-set-default 0"
+    - "grub2-set-default 1"
+    - "grub2-mkconfig -o /boot/grub2/grub.cfg"
+    - "REBOOT"
+
+...

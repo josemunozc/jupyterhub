@@ -25,9 +25,9 @@ lang en_GB
 reboot
 
 #Network
-network --bootproto=dhcp --device=em1 --onboot=off --ipv6=auto
+network --bootproto=dhcp --device=em1
 network --bootproto=dhcp --device=em2 --onboot=off --ipv6=auto
-network --bootproto=dhcp --device=em3
+network --bootproto=dhcp --device=em3 --onboot=off --ipv6=auto
 network --bootproto=dhcp --device=em4 --onboot=off --ipv6=auto
 network --hostname stashcache.gravity.cf.ac.uk
 #Root password

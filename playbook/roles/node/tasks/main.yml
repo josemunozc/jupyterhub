@@ -1,4 +1,7 @@
 ---
+#Written by David Simpson 2019 - simpsond4@cardiff.ac.uk
+#Role to setup server based on instructions:
+#https://docs.google.com/document/d/1-d8GnQYnUT5NYRgnsOiyMcoeyYGHz67nDZcZZ_kpDVg/edit
 
 - block:
 
@@ -14,14 +17,62 @@
   - name: Disable repos
     command: yum-config-manager --disable \*
 
-  - name: Disable repos
+  - name: Add nautilus.repo (yumrepo.nautilus.optiputer.net/nautilus.repo)
     command: yum-config-manager --add-repo https://yumrepo.nautilus.optiputer.net/nautilus.repo
 
-    # Stanza to set MTU to 9000 on 10 gig needed here
+  - name: set MTU 9000 for em1 (10gig)
+    lineinfile:
+      path: /etc/sysconfig/network-scripts/ifcfg-em1
+      line: MTU="9000"
+
+  - name: Ensure sshd password auth disabled
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      state: present
+      regexp: "^PasswordAuthentication"
+      line: 'PasswordAuthentication no'
+    register: updated_sshd_config
+
+  - name: enable and restart sshd
+    systemd:
+      name: sshd
+      state: restarted
+      enabled: 'yes'
+    when: updated_sshd_config is changed
+
+  - name: Create root .ssh if does not exist
+    file:
+      path: /root/.ssh
+      state: directory
+      mode: '0700'
+
+  - name: Create root .ssh/authorized_keys if does not exist
+    file:
+      path: /root/.ssh/authorized_keys
+      state: touch
+      mode: '0600'
+
+  - name: Setup root authorized keys
+    authorized_key:
+      user: root
+      state: present
+      key: '{{ item }}'
+    with_file:
+      - public_keys/johng@Johns-MacBook-Air.local
+      - public_keys/jjgraham@jupyter.calit2.optiputer.net
+      - public_keys/dimm@dimmnb
+      - public_keys/root@controller0.calit2.optiputer.net
+      - public_keys/jkeefe@actsdesMac21765
+
+
+#  - name: Ensure yum proxy configured
+#    lineinfile:
+#      path: /etc/yum.conf
+#      line: proxy=http://k8s-epyc-01.sdsc.optiputer.net:3128/
 
   - name: install node packages - i (non-gpu)
     yum:
-      name: {{ item }}
+      name: "{{ item }}"
       state: installed
     with_items:
       - wget
@@ -35,7 +86,7 @@
       - kernel-devel
       - ntp
 
-  # NetworkManager dealt with in kickstart
+  # Disable and Enable services. N.B. NetworkManager disablement and remove dealt with in kickstart
   - name: disable chronyd service
     systemd:
       name: chronyd
@@ -53,17 +104,23 @@
 
   - name: install node packages - ib (non-gpu)
     yum:
-      name: {{ item }}
+      name: "{{ item }}"
       state: installed
     with_items:
       - kernel-ml
       - kernel-ml-devel
 
-  - name: edit grub
-    command: sed -i 's/rhgb/rhgb/transparent_hugepage=never/' /etc/default/grub
+   #SEE BELOW USE ANSIBLE REPLACE
+   #  - name: edit grub 
+   #    command: sed -i 's/rhgb/rhgb/transparent_hugepage=never/' /etc/default/grub
+  - name: Ensure rhgb/transparent_hugepage=never exists in /etc/default/grub
+    replace:
+      path: /etc/default/grub
+      regexp: 'rhgb quiet'
+      replace: 'rhgb transparent_hugepage=never quiet'
 
-  - name: run package-cleanup
-    command: package-cleanup --oldkernels --count=1
+  - name: run package-cleanup (remove kernel)
+    command: /usr/bin/package-cleanup --oldkernels --count=1 -y
 
   # REBOOT is here in doc
 
@@ -71,7 +128,7 @@
 
   - name: install node packages - ii (non-gpu)
     yum:
-      name: {{ item }}
+      name: "{{ item }}"
       state: installed
     with_items:
       - device-mapper-persistent-data
@@ -103,9 +160,26 @@
       state: restarted
       enabled: 'yes'
 
-   # Add stanza to do kubernetes repo file here
+  - name: install kubernetes packages
+    yum:
+      name: "{{ item }}"
+      state: installed
+      disable_excludes: kubernetes
+    with_items:
+      - kubelet
+      - kubeadm
+      - kubectl
 
-   # Fail2bn handled in seperate role
+  - name: systemctl daemon-reload
+    command: systemctl daemon-reload
+
+  - name: enable and restart kubelet
+    systemd:
+      name: kubelet
+      state: restarted
+      enabled: 'yes'
+
+   # Fail2ban handled in seperate role
 
   become: 'True'
 ...

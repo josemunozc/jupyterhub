@@ -6,28 +6,15 @@
   become: 'True'
 
 # Add standard jail
-- name: Add fail2ban jail.local
+- name: Add fail2ban sshd.local
   template:
-   src: jail.local.j2
-   dest: /etc/fail2ban/jail.local
+   src: sshd.local
+   dest: /etc/fail2ban/jail.d/sshd.local
    owner: root
    group: root
    mode: "u=rw,g=r,o=r"
-  when: is_vagrant_vm is not defined
   notify:
    - restart fail2ban
   become: 'True'
 
-# Add VM jail if is_vagrant_vm is defined
-- name: Add fail2ban jailvm.local
-  template:
-   src: jailvm.local.j2
-   dest: /etc/fail2ban/jail.local
-   owner: root
-   group: root
-   mode: "u=rw,g=r,o=r"
-  when: is_vagrant_vm is defined
-  notify:
-   - restart fail2ban
-  become: 'True'
 ...

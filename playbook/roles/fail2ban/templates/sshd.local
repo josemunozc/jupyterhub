@@ -1,0 +1,7 @@
+[sshd]
+enabled = true
+port = ssh
+action = iptables-multiport
+logpath = %(sshd_log)s
+maxretry = 5
+bantime = 8640000

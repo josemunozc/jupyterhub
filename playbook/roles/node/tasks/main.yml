@@ -63,6 +63,7 @@
       - public_keys/dimm@dimmnb
       - public_keys/root@controller0.calit2.optiputer.net
       - public_keys/jkeefe@actsdesMac21765
+      - public_keys/paul.lonnkvist.hopkins@gmail.com
 
 
 #  - name: Ensure yum proxy configured

@@ -1,0 +1,100 @@
+---
+# Ansible common tasks to install LIGO Servers at Cardiff
+#
+# Copyright (C) 2019  Paul Hopkins <HopkinsP@cardiff.ac.uk>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License,
+# Version 2.1 only as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+- name: Yum install yum-priorities plugin
+  yum: name=yum-plugin-priorities
+
+- name: Add LSCSoft Production repo
+  yum_repository:
+    name: lscsoft-production
+    description: lscsoft-production
+    baseurl: file:///srv/yumrepo/html/lscsoft/7/production/
+    gpgcheck: no
+
+- name: Add LSCSoft Backports repo
+  yum_repository:
+    name: lscsoft-backports
+    description: lscsoft-backports
+    baseurl: file:///srv/yumrepo/html/lscsoft/7/backports/
+    priority: 97
+    gpgcheck: no
+
+#- name: Add LSCSoft Backports repo
+#  yum_repository:
+#    name: lscsoft-backports
+#    description: lscsoft-backports
+#    baseurl: file:///srv/yumrepo/html/lscsoft/7/backports/
+#    priority: 97
+
+- name: Add HTCondor Stable repo
+  yum_repository:
+    name: htcondor-stable
+    description: HTCondor Stable RPM Repository for Redhat Enterprise Linux 7
+    file: htcondor
+    baseurl: file:///srv/yumrepo/html/htcondor/stable/8.8/rhel7
+    priority: 96
+
+- name: Add HTCondor Development repo
+  yum_repository:
+    name: htcondor-development
+    description: HTCondor Development RPM Repository for Redhat Enterprise Linux 7
+    file: htcondor
+    baseurl: file:///srv/yumrepo/html/htcondor/development/8.8/rhel7/
+    priority: 96
+    enabled: no
+
+- name: Add HTCondor Prerelease repo
+  yum_repository:
+    name: htcondor-prerelease
+    description: HTCondor Prerelease RPM Repository for Redhat Enterprise Linux 7
+    file: htcondor
+    baseurl: file:///srv/yumrepo/html/htcondor/prerelease/8.8/rhel7/
+    priority: 96
+    enabled: no
+
+- name: Add HTCondor Testing repo
+  yum_repository:
+    name: htcondor-testing
+    description: HTCondor Testing RPM Repository for Redhat Enterprise Linux 7
+    file: htcondor
+    baseurl: file:///srv/yumrepo/html/htcondor/testing/8.8/rhel7/
+    priority: 96
+    enabled: no
+
+- name: Add OSG Stable repo
+  yum_repository:
+    name: osg
+    description: OSG Stable
+    file: osg
+    baseurl: file:///srv/yumrepo/html/osg/3.4/
+    gpgkey: file:///srv/yumrepo/html/RPM-GPG-KEY-OSG
+    priority: 97
+
+- name: Add Osg Development repo
+  yum_repository:
+    name: osg-development
+    description: Osg Development
+    file: osg
+    baseurl: file:///srv/yumrepo/html/osg/3.4/development
+    priority: 97
+    enabled: no
+
+- name: Add CVMFS repo
+  yum_repository:
+    name: cvmfs
+    description: CVMFS
+    baseurl: file:///srv/yumrepo/html/cernvm/7
+    gpgkey: file:///srv/yumrepo/html/GPG-KEY-cernvm
+    priority: 96

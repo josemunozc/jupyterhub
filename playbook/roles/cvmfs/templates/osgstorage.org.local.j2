@@ -1,0 +1,29 @@
+# Set the local directory for storing special files (defaults to the cache directory).
+CVMFS_WORKSPACE=/var/lib/cvmfs
+CVMFS_QUOTA_LIMIT=10000
+
+# Tiered Cache The tiered cache manager combines two other cache manager instances as
+# an upper layer and a lower layer into a single functional cache manager.
+# Usually, a small and fast upper layer (SSD, memory) is combined with a larger
+# and slower lower layer (HDD, network drive).
+CVMFS_CACHE_PRIMARY=hpc
+#
+CVMFS_CACHE_hpc_TYPE=tiered
+CVMFS_CACHE_hpc_UPPER=disk
+CVMFS_CACHE_hpc_LOWER=scratch
+CVMFS_CACHE_hpc_LOWER_READONLY=no
+
+#posix Uses a cache directory with the standard cache implementation
+CVMFS_CACHE_disk_TYPE=posix
+CVMFS_CACHE_disk_BASE=/var/lib/cvmfs/
+
+# An “alien cache” provides the possibility to use a data cache outside the control of CernVM-FS.
+# It is safe to have the alien directory shared by multiple CernVM-FS processes and it is safe to unlink files from the alien cache directory anytime.
+# Since the alien cache is unmanaged, there is no automatic quota management provided by CernVM-FS;
+# the alien cache directory is ever-growing. The CVMFS_ALIEN_CACHE requires CVMFS_QUOTA_LIMIT=-1 and CVMFS_SHARED_CACHE=no.
+CVMFS_CACHE_scratch_TYPE=posix
+CVMFS_CACHE_scratch_ALIEN=/scratch/LIGO/cvmfs
+CVMFS_CACHE_scratch_SHARED=no
+CVMFS_CACHE_scratch_QUOTA_LIMIT=-1
+
+CVMFS_DEBUGLOG=/tmp/cvmfs.log

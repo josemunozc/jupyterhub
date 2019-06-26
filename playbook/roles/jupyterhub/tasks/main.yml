@@ -1,0 +1,147 @@
+---
+- block:
+#  - name: install jupyterhub deps
+#    yum: name={{ item }} state=installed
+#    with_items:
+#        - npm
+#        - nodejs
+#
+#  # Jupyterhub sudo group needed for sudospawner
+#  - group:
+#        name={{ server_sudo_group }}
+#        state=present
+#
+#  - user:
+#        name={{ server_user }}
+#        comment="jupyterhub server user"
+#        system="yes"
+#        state=present
+#        createhome="no"
+#        shell=/sbin/nologin
+#        groups={{ server_sudo_group }}
+#
+#  - user:
+#        name={{ item.name }}
+#        groups={{ server_sudo_group }}
+#        append="yes"
+#    with_items: "{{ non_admin_users | default ({}) }}"
+#
+#  - user:
+#        name={{ item.name }}
+#        groups={{ server_sudo_group }}
+#        append="yes"
+#    with_items: "{{ admin_users | default ({}) }}"
+
+  - name: Copy jupyterhub sudoers file
+    template: src=jupyterhub.sudofile.j2
+              dest=/etc/sudoers.d/jupyterhub
+              owner=root
+              group=root
+              mode="u=rw,g=r,o=r"
+
+  - name: Copy jupyter install script over
+    template: src=install-jupyterhub.sh.j2
+              dest=/root/install-jupyterhub.sh
+              owner=root
+              group=root
+              mode="u=rwx"
+
+#  - name: Copy jupyterhub sudospawner install script
+#    template: src=install-jh-sudospawner.sh.j2
+#              dest=/root/install-jh-sudospawner.sh
+#              owner=root
+#              group=root
+#              mode="u=rwx"
+#
+#  - name: Git clone sudospawner
+#    git: repo='https://github.com/jupyterhub/sudospawner.git'
+#         dest='{{ sudospawn_clone_dir }}'
+#         version='{{ sudospawner_ver }}'
+
+  - name: Run jupyter install script - installs Py2 and Py3 kernels
+    shell: /root/install-jupyterhub.sh
+           creates=/opt/anaconda/bin/jupyterhub
+
+#  - name: Run jupyterhub sudospawner install script
+#    shell: /root/install-jh-sudospawner.sh 2&> /tmp/install-jupyterhub-sudospawner.log
+#
+##  - include: R-kernel.yml
+##  - include: bash-kernel.yml
+#
+#  - name: Create {{ working_directory }}
+#    file: path={{ working_directory }}
+#          state=directory
+#          owner={{ server_user }}
+#          group=root
+#          mode="u=rwx"
+#
+#  - name: Generate default jupyterhub config
+#    shell: /opt/anaconda/bin/jupyterhub --generate-config -f '{{ working_directory }}/jupyterhub_config.py'
+#    args:
+#        creates: '{{ working_directory }}/jupyterhub_config.py'
+#
+#  - name: Copy config file over
+#    template: src=jupyterhub_config.py.j2
+#              dest='{{ working_directory }}/jupyterhub_config.py'
+#              owner={{ server_user }}
+#              group=root
+#              mode="u=rwx,g=r,o=r"
+#
+#  - name: Generate RSA key
+#    command: openssl genrsa -out '{{ working_directory }}/ssl_{{ inventory_hostname }}.key' 2048
+#             creates='{{ working_directory }}/ssl_{{ inventory_hostname }}.key'
+#
+#  - name: RSA key file ownership
+#    file: path='{{ working_directory }}/ssl_{{ inventory_hostname }}.key'
+#          owner={{ server_user }}
+#          group=root
+#          mode="0700"
+#
+#  - name: Generate CSR
+#    command: openssl req -new -sha256 -subj "/C=UK/ST=Cardiff/L=Cardiff/O=CardiffUniversity/CN=CNGG" -key '{{ working_directory }}/ssl_{{ inventory_hostname }}.key' -out '{{ working_directory }}/ssl_{{ inventory_hostname }}.csr'
+#             creates='{{ working_directory }}/ssl_{{ inventory_hostname }}.csr'
+#
+#  - name: CSR file ownership
+#    file: path='{{ working_directory }}/ssl_{{ inventory_hostname }}.csr'
+#          owner={{ server_user }}
+#          group=root
+#          mode="0700"
+#
+#  - name: Generate self-signed SSL certificate
+#    command: openssl req -nodes -x509 -days 0 -in  '{{ working_directory }}/ssl_{{ inventory_hostname }}.csr' -key '{{ working_directory }}/ssl_{{ inventory_hostname }}.key' -out '{{ working_directory }}/ssl_{{ inventory_hostname }}.pem' -extensions v3_ca
+#             creates='{{ working_directory }}/ssl_{{ inventory_hostname }}.pem'
+#
+#  - name: Self-signed SSL certificate file ownership
+#    file: path='{{ working_directory }}/ssl_{{ inventory_hostname }}.pem'
+#          owner={{ server_user }}
+#          group=root
+#          mode="0700"
+#
+#  - name: Copy systemd service file over
+#    template: src=jupyterhub.service.j2
+#              dest=/lib/systemd/system/jupyterhub.service
+#              owner=root
+#              group=root
+#              mode="u=rwx,g=r,o=r"
+#
+#  # Restrict that on binary... must be run again if upgraded
+#  - name: Change ownership/perms of /bin/node
+#    file: path=/bin/node
+#          owner={{ server_user }}
+#          group=root
+#          mode="0750"
+#
+#  # Allow non-root to bind <1024 with node binary
+#  - name: Set port bind capability on node for jh server user
+#    shell: setcap cap_net_bind_service=+ep /bin/node
+#
+#  - name: start jupyterhub service
+#    service: name=jupyterhub
+#             state=started
+#             enabled=yes
+#
+#  # TODO - create ssl cert with let's encrypt, when ansible 2.2 is used
+
+  become: "True"
+
+...

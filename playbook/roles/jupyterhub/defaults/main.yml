@@ -1,0 +1,13 @@
+---
+
+# Note '' needed for syntax in target config file
+jh_admin_users:
+  - "'c.spxph'"
+
+server_user: jupyterhubsvr
+server_sudo_group: jupyterhub
+working_directory: /etc/jupyterhub
+sudospawner_ver: '0.5.2'
+sudospawn_clone_dir: '/opt/sudospawner/{{ sudospawner_ver }}'
+
+...

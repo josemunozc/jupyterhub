@@ -1,0 +1,10 @@
+module service_sudo_exec 1.1;
+
+require {
+        type unconfined_service_t;
+        type unconfined_t;
+        class process { transition };
+}
+
+#============= unconfined_service_t ==============
+allow unconfined_service_t unconfined_t:process transition;

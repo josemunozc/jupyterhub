@@ -1,0 +1,6 @@
+---
+- name: Yum install LDG-Client
+  yum: name=ldg-client
+
+- name: Yum install git and git-lfs
+  yum: name=git-lfs

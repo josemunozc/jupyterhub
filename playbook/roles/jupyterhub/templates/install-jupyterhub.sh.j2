@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -eux
+
+source /opt/miniconda3/bin/activate
+
+conda config --add channels conda-forge
+conda install -y jupyterlab configurable-http-proxy
+pip install jhub_remote_user_authenticator
+
+
+#export PATH=/opt/anaconda/bin/:$PAT
+#
+#pip install --upgrade pip
+#
+#pip install jupyterhub
+## install everything (except JupyterHub itself) with Python 2 and 3. Jupyter is included in Anaconda.
+#
+## From https://github.com/jupyterhub/jupyterhub/issues/715
+#python -m nb_conda_kernels.install --disable --prefix=/opt/anaconda/
+#jupyter-nbextension disable nb_conda --py --sys-prefix
+#jupyter-serverextension disable nb_conda --py --sys-prefix
+#jupyter-nbextension disable nb_anacondacloud --py --sys-prefix
+#jupyter-serverextension disable nb_anacondacloud --py --sys-prefix
+#jupyter-nbextension disable nbpresent --py --sys-prefix
+#jupyter-serverextension disable nbpresent --py --sys-prefix
+#
+#ipython kernel install --display-name Python3
+#
+#conda create -n py2 python=2 anaconda -y
+## register py2 kernel
+#source activate py2
+#ipython kernel install --display-name Python2
+#
+#npm install -g configurable-http-proxy

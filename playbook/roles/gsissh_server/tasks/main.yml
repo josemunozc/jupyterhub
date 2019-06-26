@@ -1,0 +1,140 @@
+---
+- name: Yum install gsi-openssh-server
+  yum: name=gsi-openssh-server
+
+- name: Copy SSH keys
+  file:
+    src: '/etc/ssh/{{ item }}'
+    dest: '/etc/gsissh/{{ item }}'
+    state: link
+  with_items:
+    - ssh_host_ecdsa_key
+    - ssh_host_ecdsa_key.pub
+    - ssh_host_ed25519_key
+    - ssh_host_ed25519_key.pub
+    - ssh_host_rsa_key
+    - ssh_host_rsa_key.pub
+
+#- firewalld:
+#    port: 2222/tcp
+#    permanent: yes
+#    state: enabled
+#
+#- name: Allow sshd to listen on tcp ports 22,2222
+#  seport:
+#    ports: 22,2222
+#    proto: tcp
+#    setype: ssh_port_t
+#    state: present
+#
+#- lineinfile:
+#    path: /etc/gsissh/sshd_config
+#    regexp: '^#Port 22'
+#    line: 'Port 2222'
+
+- name: Enable normal SSH
+  systemd:
+    name: sshd
+    state: stopped
+    enabled: no
+
+- name: Enable GSI SSH
+  systemd:
+    name: gsisshd
+    state: started
+    enabled: yes
+
+#- name: Copy SSSD LIGO Config
+#  template:
+#    src: ligo_domain.conf.j2
+#    dest: /etc/sssd/conf.d/ligo.conf
+#    owner: root
+#    group: root
+#    mode: 0600
+
+- name: Make LIGO default Kerberos realm
+  ini_file:
+    path: /etc/krb5.conf
+    section: libdefaults
+    option: default_realm
+    value: LIGO.ORG
+    backup: yes
+
+#- name: Add Ligo domain to sssd
+#  ini_file:
+#    path: /etc/sssd/sssd.conf
+#    section: sssd
+#    option: domains
+#    value: default, ligo.org
+#    backup: yes
+
+#- name: Enable sssd ssh integration
+#  ini_file:
+#    path: /etc/sssd/sssd.conf
+#    section: sssd
+#    option: services
+#    value: nss, pam, autofs, ssh
+#    backup: yes
+#
+## On ssh for testing purposes, need to disable .ssh/authorised_keys file management
+#- lineinfile:
+#    path: /etc/ssh/sshd_config
+#    regexp: '^AuthorizedKeysFile      .ssh/authorized_keys'
+#    line: '#AuthorizedKeysFile none'
+#
+#- lineinfile:
+#    path: /etc/ssh/sshd_config
+#    regexp: '^#AuthorizedKeysCommand none'
+#    line: 'AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys'
+#
+#- lineinfile:
+#    path: /etc/ssh/sshd_config
+#    regexp: '^#AuthorizedKeysCommandUser nobody'
+#    line: 'AuthorizedKeysCommandUser root'
+
+#- name: Modify access file
+#  lineinfile:
+#    path: /etc/security/access.conf
+#    regexp: '- : ALL EXCEPT ansible root c.mpmds c.sistg1 c.sbisa5 c.whcrm9 c.spxph : ALL'
+#    line: '- : ALL EXCEPT ansible root c.mpmds c.sistg1 c.sbisa5 c.whcrm9 c.spxph paul.hopkins : ALL'
+
+- name: Yum install ligo-grid-mapfile-manager
+  yum: name=ligo-grid-mapfile-manager
+
+- name: Copy LGMM config
+  template:
+    src: lgmm_config.py.j2
+    dest: /etc/lgmm/lgmm_config.py
+    owner: root
+    group: root
+    mode: 0644
+
+# touch a file, using symbolic modes to set the permissions (equivalent to 0644)
+- name: Prepare LGMM files
+  file:
+    path: /etc/grid-security/whitelist
+    state: touch
+    owner: nobody
+    group: nobody
+    mode: 0644
+
+- file:
+    path: /etc/grid-security/grid-mapfile
+    state: touch
+    owner: nobody
+    group: nobody
+    mode: 0644
+
+- name: Make sure lgmm is running
+  service:
+    name: lgmm
+    state: started
+    enabled: yes
+
+- name: add ligo default environment
+  template:
+    src: etc_profile_ligo.sh.j2
+    dest: /etc/profile.d/ligo.sh
+    owner: root
+    group: root
+    mode: 0644

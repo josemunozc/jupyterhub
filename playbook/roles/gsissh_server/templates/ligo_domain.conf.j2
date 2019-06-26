@@ -1,0 +1,17 @@
+[domain/ligo.org]
+id_provider = ldap
+ldap_uri = ldaps://ldap.ligo.org
+ldap_search_base = ou=people,dc=ligo,dc=org?subtree?(&(isMemberOf=Communities:LSCVirgoLIGOGroupMembers)(isMemberOf=Communities:LVC:LSC:LDG:LDGUsers))
+ldap_group_search_base = ou=group,dc=ligo,dc=org?onelevel?
+default_shell = /bin/bash
+ldap_tls_cacert = /etc/pki/tls/certs/ca-bundle.crt
+
+auth_provider = krb5
+krb5_realm = LIGO.ORG
+
+cache_credentials = True
+
+#override_gid = 65501
+#override_homedir = /tmp/%u
+#
+#krb5_map_user = pe_runs:paul.hopkins

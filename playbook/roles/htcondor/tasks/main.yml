@@ -1,0 +1,20 @@
+---
+- name: Yum install HTCondor
+  yum: name=condor
+
+- name: Copy HTCondor config files
+  template:
+    src: "{{ item }}.j2"
+    dest: /etc/condor/config.d/{{ item }}
+    owner: condor
+    group: condor
+    mode: 0644
+  with_items:
+    - "00-role.conf"
+  
+- name: Start HTCondor
+  systemd:
+    state: started
+    name: condor
+    enabled: yes
+

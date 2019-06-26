@@ -1,0 +1,18 @@
+SYSTEM_JOB_MACHINE_ATTRS = Cpus SlotWeight NUMAD_OK cpuinfo_model
+SYSTEM_JOB_MACHINE_ATTRS_HISTORY_LENGTH = 10
+
+JOB_DEFAULT_REQUESTMEMORY = 2048
+MAX_JOBS_RUNNING          = 6000
+CLAIM_WORKLIFE            = $(HOUR)
+START_LOCAL_UNIVERSE      = TotalLocalJobsRunning < 15
+START_SCHEDULER_UNIVERSE  = TotalSchedulerJobsRunning < 200
+
+DEFAULT_JOB_MAX_RETRIES   = 1
+
+# try to send jobs back to queue if they were kicked off due to
+# another bad apple on their node
+SYSTEM_PERIODIC_RELEASE     = (MemoryUsage < RequestMemory) && HoldReasonCode =?= 34
+
+SYSTEM_PERIODIC_REMOVE      = (JobStatus == 5) && (time() - EnteredCurrentStatus > 90*$(DAY))
+SYSTEM_PERIODIC_HOLD        = (JobUniverse != 7 && (RemoteWallClockTime > 60*$(DAY))) && GrantedExtension != True
+SYSTEM_PERIODIC_HOLD_REASON = "Job exceeded execution time of 60 days. Please contact uwm-help@cgca.uwm.edu."

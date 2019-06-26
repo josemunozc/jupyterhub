@@ -1,0 +1,38 @@
+---
+- name: Yum install CVMFS
+  yum:
+    name:
+      - cvmfs
+      - cvmfs-x509-helper
+      - cvmfs-config-default
+
+- lineinfile:
+    path:  /etc/cvmfs/default.d/60-egi.conf
+    regexp: '^# /etc/cvmfs/default.d/50-cern.conf'
+    line: 'CVMFS_CONFIG_REPOSITORY=config-egi.egi.eu'
+
+- lineinfile:
+    path:  /etc/auto.master
+    line: '/cvmfs /etc/auto.cvmfs'
+
+- name: Start AutoFS
+  systemd:
+    state: started
+    name: autofs
+    enabled: yes
+
+- name: Copy default CVMFS config
+  template:
+    src: default.local.j2
+    dest: /etc/cvmfs/default.local
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copy osgstorage config
+  template:
+    src: osgstorage.org.local.j2
+    dest: /etc/cvmfs/domain.d/osgstorage.org.local
+    owner: root
+    group: root
+    mode: 0644

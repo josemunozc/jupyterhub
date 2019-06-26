@@ -1,0 +1,14 @@
+[Unit]
+Description=Jupyterhub
+Requires=firewalld.service
+After=network-online.target
+
+[Service]
+User={{ server_user }}
+Environment="PATH=/opt/anaconda/bin:/sbin:/bin:/usr/sbin:/usr/bin"
+ExecStart=/opt/anaconda/bin/jupyterhub --JupyterHub.spawner_class=sudospawner.SudoSpawner
+WorkingDirectory={{ working_directory }}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

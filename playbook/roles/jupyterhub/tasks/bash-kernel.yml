@@ -1,0 +1,13 @@
+---
+
+- name: Check pip upgrade
+  command: "pip install --upgrade pip"
+
+- name: pip install bash_kernel and deps
+  command: "pip install bash_kernel jupyter_client ipython ipykernel"
+
+- name: python install bash kernel module
+  command: "python -m bash_kernel.install"
+
+...
+

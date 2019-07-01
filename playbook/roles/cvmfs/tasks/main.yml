@@ -36,3 +36,19 @@
     owner: root
     group: root
     mode: 0644
+
+- name: Copy ligo.osgstorage.org.conf
+  template:
+    src: ligo.osgstorage.org.local.j2
+    dest: /etc/cvmfs/config.d/ligo.osgstorage.org.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copy gwosc.osgstorage.org.conf
+  template:
+    src: gwosc.osgstorage.org.local.j2
+    dest: /etc/cvmfs/config.d/gwosc.osgstorage.org.conf
+    owner: root
+    group: root
+    mode: 0644

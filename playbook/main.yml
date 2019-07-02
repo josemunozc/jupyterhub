@@ -1,9 +1,7 @@
 ---
 
-- name: run common roles
-  hosts: all
+- name: run LIGO roles
+  hosts: ligo_everything
   roles:
-    - node
-    - fail2ban
-    - grub-info
+    - ligo_hawk_repos
 ...

@@ -33,7 +33,7 @@
 
 - name: Copy HTCondor config.d files
   template:
-    src: "submit/{{ item }}.j2"
+    src: "execute/{{ item }}.j2"
     dest: /etc/condor/config.d/{{ item }}
     owner: condor
     group: condor

@@ -1,0 +1,45 @@
+RELEASE_DIR    = /usr
+LOCAL_DIR      = /var
+SYSTEM_RUN_DIR = /run
+
+LOCAL_CONFIG_FILE         = /etc/condor/condor_config.local
+REQUIRE_LOCAL_CONFIG_FILE = false
+LOCAL_CONFIG_DIR          = /etc/condor/config.d
+
+RUN     = $(SYSTEM_RUN_DIR)/condor
+LOG     = $(LOCAL_DIR)/log/condor
+LOCK    = $(LOCAL_DIR)/lock/condor
+SPOOL   = $(LOCAL_DIR)/lib/condor/spool
+EXECUTE = $(LOCAL_DIR)/lib/condor/execute
+BIN     = $(RELEASE_DIR)/bin
+LIB     = $(RELEASE_DIR)/lib64/condor
+INCLUDE = $(RELEASE_DIR)/include/condor
+SBIN    = $(RELEASE_DIR)/sbin
+LIBEXEC = $(RELEASE_DIR)/libexec/condor
+SHARE   = $(RELEASE_DIR)/share/condor
+
+PROCD_ADDRESS = $(RUN)/procd_pipe
+CONDOR_HOST = cl8-ib
+
+use SECURITY:HOST_BASED
+HAWK_SUBNET = 172.2.0.0/16
+ALLOW_READ  = $(HAWK_SUBNET)
+
+# ensure all communication occurs over private network
+# may need to tweak when setting up flocking
+BIND_ALL_INTERFACES = False
+NETWORK_INTERFACE   = 172.2.*
+PRIVATE_NETWORK_NAME      = HAWKNET
+PRIVATE_NETWORK_INTERFACE = 172.2.*
+
+DEFAULT_DOMAIN_NAME  = hawk.supercomputingwales.ac.uk
+UID_DOMAIN           = hawk.supercomputingwales.ac.uk
+TRUST_UID_DOMAIN     = True
+FILESYSTEM_DOMAIN    = hawk.supercomputingwales.ac.uk
+
+CONDOR_ADMIN = HopkinsP@cardiff.ac.uk
+DAEMON_LIST = MASTER
+
+MINUTE = 60
+HOUR   = (60 * $(MINUTE))
+DAY    = (24 * $(HOUR))

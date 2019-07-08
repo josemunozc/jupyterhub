@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Suggested condor_config entries
+# STARTD_CRON_JOBLIST = $(STARTD_CRON_JOBLIST) FACTER
+# STARTD_CRON_FACTER_EXECUTABLE = /usr/local/bin/facter_classad
+# STARTD_CRON_FACTER_PREFIX = facter_
+# STARTD_CRON_FACTER_PERIOD = 300
+
+# Exit if the command "facter" is not installed
+which facter > /dev/null || exit 1
+
+# Advisertise the various "facts" about this system
+# 1. Replace "processor[0-9]+" with "processor"
+# 2. Remove consecutive identical entries
+# 3. Remove certain facts
+# 4. Prepend "facter_"
+# 5. Trim whitespace 
+facter | sed 's/processor[0-9]\+/processor/g' | sed '$!N; /^\(.*\)\n\1$/!P; D' | grep -Ev '(ssh|SSHFP|path|processors|partitions|^os |system_uptime)' | sed 's/\([^ ]*\) => \(.*\)/\1 = "\2"/' | sed 's/  */ /g'

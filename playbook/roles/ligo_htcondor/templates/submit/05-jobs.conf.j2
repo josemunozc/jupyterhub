@@ -1,4 +1,4 @@
-SYSTEM_JOB_MACHINE_ATTRS = Cpus SlotWeight NUMAD_OK cpuinfo_model
+SYSTEM_JOB_MACHINE_ATTRS = Cpus SlotWeight cpuinfo_model
 SYSTEM_JOB_MACHINE_ATTRS_HISTORY_LENGTH = 10
 
 JOB_DEFAULT_REQUESTMEMORY = 2048
@@ -15,4 +15,4 @@ SYSTEM_PERIODIC_RELEASE     = (MemoryUsage < RequestMemory) && HoldReasonCode =?
 
 SYSTEM_PERIODIC_REMOVE      = (JobStatus == 5) && (time() - EnteredCurrentStatus > 90*$(DAY))
 SYSTEM_PERIODIC_HOLD        = (JobUniverse != 7 && (RemoteWallClockTime > 60*$(DAY))) && GrantedExtension != True
-SYSTEM_PERIODIC_HOLD_REASON = "Job exceeded execution time of 60 days. Please contact uwm-help@cgca.uwm.edu."
+SYSTEM_PERIODIC_HOLD_REASON = "Job exceeded execution time of 60 days. Please contact grav-it@astro.cf.ac.uk"

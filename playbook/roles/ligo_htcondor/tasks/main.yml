@@ -12,6 +12,8 @@
     owner: condor
     group: condor
     mode: 0644
+  notify:
+    - Reload config
 
 - name: Copy HTCondor config.d files
   template:
@@ -30,6 +32,8 @@
     - 06-logs.conf
     - 07-transfers.conf
   when: "'ligo_login' in group_names"
+  notify:
+    - Reload config
 
 - name: Copy HTCondor config.d files
   template:
@@ -43,6 +47,21 @@
     - 50-slot.conf
     - 51-facter.conf
   when: "'ligo_all_nodes' in group_names"
+  notify:
+    - Reload config
+
+- name: Copy HTCondor config.d files
+  template:
+    src: "execute/{{ item }}.j2"
+    dest: /etc/condor/config.d/{{ item }}
+    owner: condor
+    group: condor
+    mode: 0644
+  with_items:
+    - 40-role.conf
+  when: "'ligo_gpu' in group_names"
+  notify:
+    - Reload config
 
 - name: Copy facter script
   template:

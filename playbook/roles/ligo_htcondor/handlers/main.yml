@@ -1,0 +1,6 @@
+- name: Reload config
+  systemd:
+    name: condor
+    state: reloaded
+
+

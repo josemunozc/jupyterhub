@@ -1,0 +1,15 @@
+---
+- name: Yum install Singularity
+  yum:
+    name:
+      - osg
+    enablerepo:
+      - osg
+
+- name: Copy singularity.conf
+  template:
+    src: singularity.conf.j2
+    dest: /etc/singularity/singularity.conf
+    owner: root
+    group: root
+    mode: 0644

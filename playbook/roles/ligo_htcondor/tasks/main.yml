@@ -59,7 +59,7 @@
     group: condor
     mode: 0644
   with_items:
-    - 40-role.conf
+    - 40-gpu.conf
   when: "'ligo_gpu' in group_names"
   notify:
     - Reload config

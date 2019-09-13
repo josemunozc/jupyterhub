@@ -1,4 +1,4 @@
 SINGULARITY_JOB = !isUndefined(TARGET.SingularityImage)
 SINGULARITY_IMAGE_EXPR = TARGET.SingularityImage
-
-SINGULARITY_BIND_EXPR = join(",", "/home", "/scratch", "/apps", "/cvmfs" )
+SINGULARITY_TARGET_DIR = /srv
+SINGULARITY_BIND_EXPR = join(",", "/home", "/nfshome", "/scratch", "/apps", "/cvmfs" )

@@ -51,6 +51,7 @@
   notify:
     - Reload config
 
+
 - name: Copy HTCondor config.d files
   template:
     src: "execute/{{ item }}.j2"

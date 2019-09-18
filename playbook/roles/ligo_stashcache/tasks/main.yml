@@ -23,7 +23,7 @@
   - name: set MTU 9000 for em1 (10gig)
     lineinfile:
       path: /etc/sysconfig/network-scripts/ifcfg-em1
-      line: MTU="9000"
+      line: MTU="1500"
 
   - name: Ensure sshd password auth disabled
     lineinfile:

@@ -21,7 +21,7 @@
   yum_repository:
     name: lscsoft-production
     description: lscsoft-production
-    baseurl: http://cl8/software/lscsoft/7/production/
+    baseurl: http://arccadeploy.cf.ac.uk/cobbler/repo_mirror/LIGO_lscsoft-production_x86_64/
     gpgcheck: no
   when: "'ligo_servers' in group_names"
 
@@ -37,14 +37,14 @@
 - name: Add EPEL GPG key
   rpm_key:
     key: http://cl8/software/RPM-GPG-KEY-EPEL-7
-  when: "'ligo_servers' in group_names"
+  when: "'ligo_everything' in group_names"
 
 - name: Add LSCSoft EPEL repo
   yum_repository:
     name: lscsoft-epel
     description: lscsoft-epel
-    baseurl: http://cl8/software/lscsoft/7/epel
-  when: "'ligo_servers' in group_names"
+    baseurl: http://arccadeploy.cf.ac.uk/cobbler/repo_mirror/LIGO_EPEL7_x86_64/
+  when: "'ligo_everything' in group_names"
 
 - name: Add HTCondor GPG key
   rpm_key:
@@ -56,7 +56,7 @@
     name: htcondor-stable
     description: HTCondor Stable RPM Repository for Redhat Enterprise Linux 7
     file: htcondor
-    baseurl: http://cl8/software/htcondor/stable/8.8/rhel7
+    baseurl: http://arccadeploy.cf.ac.uk/cobbler/repo_mirror/LIGO_htcondor-stable_x86_64/
     priority: 96
   when: "'ligo_everything' in group_names"
 
@@ -97,7 +97,7 @@
     name: osg
     description: OSG Stable
     file: osg
-    baseurl: http://cl8/software/osg/3.4/
+    baseurl: http://arccadeploy.cf.ac.uk/cobbler/repo_mirror/LIGO_osg-stable_x86_64/
     gpgkey: http://cl8/software/RPM-GPG-KEY-OSG
     exclude: cvmfs condor*
     priority: 97
@@ -121,7 +121,16 @@
   yum_repository:
     name: cvmfs
     description: CVMFS
-    baseurl: http://cl8/software/cernvm/7
+    baseurl: http://arccadeploy.cf.ac.uk/cobbler/repo_mirror/LIGO_cvmfs_x86_64/
     gpgkey: http://cl8/software/GPG-KEY-cernvm
     priority: 96
   when: "'ligo_everything' in group_names"
+
+- name: Add Shibboleth Repo
+  yum_repository:
+    name: shibboleth
+    description: Shibboleth (CentOS_7)
+    baseurl: http://cl8/software/shibboleth/7
+    gpgkey: http://cl8/software/GPG-KEY-shibboleth
+    enabled: yes
+  when: "'ligo_servers' in group_names"

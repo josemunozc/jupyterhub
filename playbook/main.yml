@@ -4,6 +4,9 @@
   hosts: ligo_everything
   roles:
     - ligo_hawk_repos
+    - ligo_access_conf
+    - ligo_sudoers
     - ligo_cvmfs
+    - ligo_singularity
     - ligo_htcondor
 ...

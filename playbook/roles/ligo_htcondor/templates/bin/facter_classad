@@ -15,4 +15,7 @@ which facter > /dev/null || exit 1
 # 3. Remove certain facts
 # 4. Prepend "facter_"
 # 5. Trim whitespace 
-facter | sed 's/processor[0-9]\+/processor/g' | sed '$!N; /^\(.*\)\n\1$/!P; D' | grep -Ev '(ssh|SSHFP|path|processors|partitions|^os |system_uptime)' | sed 's/\([^ ]*\) => \(.*\)/\1 = "\2"/' | sed 's/  */ /g'
+facter | sed 's/processor[0-9]\+/processor/g' | sed '$!N; /^\(.*\)\n\1$/!P; D' | grep -Ev '(ssh|SSHFP|path|processors|partitions|^os |system_uptime)' | sed 's/\([^ ]*\) => \(.*\)/facter_\1 = "\2"/' | sed 's/  */ /g'
+
+# add cpuinfo flags, sorry but I was not able to do this with sed
+perl -ane 'chomp; exit 0 unless $_; @a=split /\s+:\s+/; next if $a[0] =~ /^(power management|processor)/; $a[0]=~s/\s+/_/; print "cpuinfo_$a[0] = \"$a[1]\"\n"' /proc/cpuinfo | sed 's/  */ /g'

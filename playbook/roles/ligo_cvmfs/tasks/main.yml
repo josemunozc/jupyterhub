@@ -5,6 +5,7 @@
       - cvmfs
       - cvmfs-x509-helper
       - cvmfs-config-default
+      - osg-ca-certs
 
 - lineinfile:
     path:  /etc/cvmfs/default.d/60-egi.conf

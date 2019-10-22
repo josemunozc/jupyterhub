@@ -1,7 +1,7 @@
 ---
 
 - name: run LIGO roles
-  hosts: ligo_everything
+  hosts: '{{host}}'
   roles:
     - ligo_hawk_repos
     - ligo_access_conf

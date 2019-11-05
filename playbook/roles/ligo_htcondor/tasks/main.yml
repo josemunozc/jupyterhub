@@ -47,6 +47,7 @@
     - 50-slot.conf
     - 51-facter.conf
     - 52-singularity.conf
+    - 60-job-memory.conf
   when: "'ligo_all_nodes' in group_names"
   notify:
     - Reload config

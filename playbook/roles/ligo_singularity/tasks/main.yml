@@ -2,7 +2,7 @@
 - name: Yum install Singularity
   yum:
     name:
-      - osg
+      - singularity
     enablerepo:
       - osg
 

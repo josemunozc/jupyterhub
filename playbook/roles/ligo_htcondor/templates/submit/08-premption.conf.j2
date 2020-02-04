@@ -1,0 +1,3 @@
+ALLOW_PSLOT_PREEMPTION = True
+
+PREEMPTION_REQUIREMENTS = ($(ActivationTimer) > (24 * $(HOUR))) && (RemoteUserPrio > SubmittorPrio * 1.2)

@@ -4,3 +4,5 @@ slot_type_1 = cpus=$(DETECTED_CORES), mem=$(DETECTED_MEMORY)
 num_slots_type_1 = 1
 
 SLOT_WEIGHT = ifThenElse(Cpus >= Memory/2048, Cpus, Memory/2048)
+
+DedicatedScheduler = "DedicatedScheduler@cl8.supercomputingwales.ac.uk"

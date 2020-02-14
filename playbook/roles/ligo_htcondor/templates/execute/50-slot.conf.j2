@@ -1,7 +1,12 @@
 # Partionable Slots
-slot_type_1_partitionable = true
-slot_type_1 = cpus=$(DETECTED_CORES), mem=$(DETECTED_MEMORY)
-num_slots_type_1 = 1
+MEMORY = $(DETECTED_MEMORY)*2
+
+NUM_SLOTS = 1
+NUM_SLOTS_TYPE_1 = 1
+SLOT_TYPE_1 = 100%
+SLOT_TYPE_1_PARTITIONABLE = TRUE
+
+START=RequestMemory < ( DetectedMemory/2 )
 
 SLOT_WEIGHT = ifThenElse(Cpus >= Memory/2048, Cpus, Memory/2048)
 

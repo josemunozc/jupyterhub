@@ -1,9 +1,12 @@
 ---
-- name: Yum install HTCondor
+- name: Yum install HTCondor, Facter and Ruby
   yum:
     name:
       - condor
       - facter
+      - ruby
+    enablerepo:
+      - htcondor-stable
 
 - name: Copy base HTCondor config file
   template:
@@ -13,9 +16,9 @@
     group: condor
     mode: 0644
   notify:
-    - Reload config
+    - reload condor
 
-- name: Copy HTCondor config.d files
+- name: Copy Submit config.d files
   template:
     src: "submit/{{ item }}.j2"
     dest: /etc/condor/config.d/{{ item }}
@@ -31,11 +34,12 @@
     - 05-jobs.conf
     - 06-logs.conf
     - 07-transfers.conf
+    - 08-premption.conf
   when: "'ligo_login' in group_names"
   notify:
-    - Reload config
+    - reload condor
 
-- name: Copy HTCondor config.d files
+- name: Copy Compute config.d files
   template:
     src: "execute/{{ item }}.j2"
     dest: /etc/condor/config.d/{{ item }}
@@ -51,21 +55,7 @@
     - 60-job-memory.conf
   when: "'ligo_all_nodes' in group_names"
   notify:
-    - Reload config
-
-
-- name: Copy HTCondor config.d files
-  template:
-    src: "execute/{{ item }}.j2"
-    dest: /etc/condor/config.d/{{ item }}
-    owner: condor
-    group: condor
-    mode: 0644
-  with_items:
-    - 40-gpu.conf
-  when: "'ligo_gpu' in group_names"
-  notify:
-    - Reload config
+    - reload condor
 
 - name: Copy facter script
   template:
@@ -74,11 +64,60 @@
     owner: condor
     group: condor
     mode: 0755
-  when: "'ligo_all_nodes' in group_names"
 
-- name: Start HTCondor
+- name: Disable HTCondor from starting automatically on all nodes
   systemd:
-    state: started
     name: condor
-    enabled: yes
+    enabled: no
 
+- name: Copy accounting tags and users scripts
+  copy:
+    src: "{{ item }}"
+    dest: /usr/local/bin/{{ item }}
+    mode: '0755'
+  with_items:
+    - condor_accounting_users
+    - condor_accounting_tags
+
+# Need to workout when these files change and then update accordingly
+- name: Generate HTCondor valid users
+  command: /usr/local/bin/condor_accounting_users -s cdf -f /etc/condor/accounting/valid_users
+  args:
+    creates: /etc/condor/accounting/valid_users
+
+- name: Generate HTCondor valid tags
+  command: /usr/local/bin/condor_accounting_tags -r '^aluk\.(dev|prod|sim)\.(s6|o1|o2|o3|o4)\.(burst|cbc|cw|detchar|sgwb)\..+' -f /etc/condor/accounting/valid_tags
+  args:
+    creates: /etc/condor/accounting/valid_tags
+
+- name: Copy ldg-report script
+  copy:
+    src: ldg-report
+    dest: /usr/local/bin/ldg-report
+    mode: '0755'
+
+- name: Create ldg-report httpd directory
+  file:
+    path="{{ ldg_report_dir }}"
+    state=directory
+    owner=root
+    group=root
+    mode="755"
+
+- name: Create an ldg-report cron.d file
+  cron:
+    name: ldg-report
+    minute: 0
+    hour: 2
+    user: root
+    job: "/usr/local/bin/ldg-report --cluster {{ ldg_cluster_name }} | sort > {{ ldg_report_dir }}/{{ ldg_cluster_name }}_$(date --utc +\\%F --date='1 day ago').txt"
+    cron_file: ldg-report
+
+- name: Copy ldg-report httpd conf
+  template:
+    src=httpd_ldg-report.conf.j2
+    dest=/etc/httpd/conf.d/ldg-report.conf
+    owner=root
+    group=root
+    mode="0644"
+  notify: reload httpd

@@ -44,6 +44,7 @@
     mode: 0644
   with_items:
     - 00-role.conf
+    - 40-gpu.conf
     - 50-slot.conf
     - 51-facter.conf
     - 52-singularity.conf

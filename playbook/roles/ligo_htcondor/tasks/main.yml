@@ -80,6 +80,7 @@
     src: "{{ item }}"
     dest: /usr/local/bin/{{ item }}
     mode: '0755'
+  when: "'ligo_login' in group_names"
   with_items:
     - condor_accounting_users
     - condor_accounting_tags
@@ -89,17 +90,20 @@
   command: /usr/local/bin/condor_accounting_users -s cdf -f /etc/condor/accounting/valid_users
   args:
     creates: /etc/condor/accounting/valid_users
+  when: "'ligo_login' in group_names"
 
 - name: Generate HTCondor valid tags
   command: /usr/local/bin/condor_accounting_tags -r '^aluk\.(dev|prod|sim)\.(s6|o1|o2|o3|o4)\.(burst|cbc|cw|detchar|sgwb)\..+' -f /etc/condor/accounting/valid_tags
   args:
     creates: /etc/condor/accounting/valid_tags
+  when: "'ligo_login' in group_names"
 
 - name: Copy ldg-report script
   copy:
     src: ldg-report
     dest: /usr/local/bin/ldg-report
     mode: '0755'
+  when: "'ligo_login' in group_names"
 
 - name: Create ldg-report httpd directory
   file:
@@ -108,6 +112,7 @@
     owner=root
     group=root
     mode="755"
+  when: "'ligo_login' in group_names"
 
 - name: Create an ldg-report cron.d file
   cron:
@@ -117,6 +122,7 @@
     user: root
     job: "/usr/local/bin/ldg-report --cluster {{ ldg_cluster_name }} | sort > {{ ldg_report_dir }}/{{ ldg_cluster_name }}_$(date --utc +\\%F --date='1 day ago').txt"
     cron_file: ldg-report
+  when: "'ligo_login' in group_names"
 
 - name: Copy ldg-report httpd conf
   template:
@@ -126,3 +132,4 @@
     group=root
     mode="0644"
   notify: reload httpd
+  when: "'ligo_login' in group_names"

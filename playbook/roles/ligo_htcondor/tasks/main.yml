@@ -70,6 +70,11 @@
     name: condor
     enabled: no
 
+- name: Enable Hyperthreading on all LIGO nodes
+  systemd:
+    name: ht-off
+    enabled: no
+
 - name: Copy accounting tags and users scripts
   copy:
     src: "{{ item }}"

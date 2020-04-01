@@ -69,14 +69,15 @@
 #    priority: 96
 #    enabled: no
 
-#- name: Add HTCondor Prerelease repo
-#  yum_repository:
-#    name: htcondor-prerelease
-#    description: HTCondor Prerelease RPM Repository for Redhat Enterprise Linux 7
-#    file: htcondor
-#    baseurl: http://cl8/software/htcondor/prerelease/8.8/rhel7/
-#    priority: 96
-#    enabled: no
+- name: Add HTCondor Prerelease repo
+  yum_repository:
+    name: htcondor-prerelease
+    description: HTCondor Prerelease RPM Repository for Redhat Enterprise Linux 7
+    file: htcondor
+    baseurl: http://arccadeploy.cf.ac.uk/cobbler/repo_mirror/LIGO_htcondor-prerelease_x86_64/
+    priority: 96
+    enabled: no
+  when: "'ligo_everything' in group_names"
 
 #- name: Add HTCondor Testing repo
 #  yum_repository:

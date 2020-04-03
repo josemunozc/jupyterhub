@@ -15,8 +15,9 @@
     owner: condor
     group: condor
     mode: 0644
-  notify:
-    - reload condor
+# Disable notify
+#  notify:
+#    - reload condor
 
 - name: Copy Submit config.d files
   template:
@@ -36,8 +37,9 @@
     - 07-transfers.conf
     - 08-premption.conf
   when: "'ligo_login' in group_names"
-  notify:
-    - reload condor
+# Disable notify
+#  notify:
+#    - reload condor
 
 - name: Copy Compute config.d files
   template:
@@ -54,8 +56,9 @@
     - 52-singularity.conf
     - 60-job-memory.conf
   when: "'ligo_all_nodes' in group_names"
-  notify:
-    - reload condor
+# Disable notify
+#  notify:
+#    - reload condor
 
 - name: Copy facter script
   template:

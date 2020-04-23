@@ -1,1 +1,56 @@
 export LIGO_DATAFIND_SERVER=datafind.ligo.org:443
+export DEFAULT_SEGMENT_SERVER=https://segments.ligo.org
+export LAL_DATA_PATH=/cvmfs/oasis.opensciencegrid.org/ligo/sw/lalsuite/lalsuite-extra-1.3.0/data/lalsimulation
+export OMP_NUM_THREADS=1
+
+export TMPDIR=/var/tmp2/${USER}
+mkdir -p $TMPDIR
+
+export CONDA_PKGS_DIRS=$TMPDIR/conda/pkgs
+
+function homequota() {
+    /bin/quota -wg ${1:-$USER} | tail -n 1 | awk '{printf "Home directory space: %dGB of %dGB (%d%%), %.1fM of %.1fM files (%d%%).\n", $2/1024/1024, $3/1024/1024, $2*100/$3, $5/1e6, $6/1e6, $5*100/$6}'
+}
+function scratchquota() {
+    /bin/lfs quota -g ${1:-$USER} /scratch | tail -n 1 | awk '{printf "Scratch directory space: %dGB of %dTB (%d%%)\n", $2/1024/1024, $4/1024/1024/1024, $2*100/$4 }'
+}
+
+function quota() {
+    homequota ${1:-$USER}
+    scratchquota ${1:-$USER}
+}
+
+if [ `id -u` -ge 10000000 ]; then
+    [ -f  /tmp/x509up_u$( id -u ) ] && ( grid-proxy-info -f /tmp/x509up_u$( id -u ) -exists || rm  /tmp/x509up_u$( id -u ) )
+
+        echo "┌──────────────────────────────────────────────────────────────────────────────┐"
+    ! grid-proxy-info -exists &>/dev/null && klist -s && (( echo -n "ligo-proxy-init: "; ligo-proxy-init -k ; echo ) |  awk '{printf "│ %-76s │\n", $0}' )
+    grid-proxy-info -exists >/dev/null 2>&1 || ( 
+        echo "│ No certificate detected: Run 'ligo-proxy-init `printf '%-31s' "$USER'"`│"
+        echo "│                                                                              │"
+    )
+
+    unset first_noenv_file
+    for noenv_file in .noigwn .noligo; do
+        if [ -f $HOME/$noenv_file ]; then
+            first_noenv_file=$noenv_file
+            break
+        fi
+    done
+
+    if  [ ! -v first_noenv_file ]; then
+        source /cvmfs/oasis.opensciencegrid.org/ligo/sw/conda/bin/activate igwn-py37
+        export PS1="$CONDA_PROMPT_MODIFIER[\u@\h \W]\\$ "
+
+        echo "│ Loaded igwn-py37 environment. To disable run 'touch ~/.noigwn' and relogin.  │"
+    else
+        echo "│ No default environment. To enable, run 'rm ~/"${first_noenv_file}"' and relogin.           │"
+    fi
+
+        echo "│                                                                              │"
+        echo "│ `printf '%-76s' "$( homequota )"` │"
+        echo "│ `printf '%-76s' "$( scratchquota )"` │"
+        echo "└──────────────────────────────────────────────────────────────────────────────┘"
+
+        unset first_noenv_file noenv_file
+fi

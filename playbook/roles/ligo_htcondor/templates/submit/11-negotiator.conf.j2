@@ -1,0 +1,24 @@
+
+NEGOTIATOR_DEPTH_FIRST = True
+# Rank nodes linearly from Skylake w/o GPU, Skylake w/ GPU, Haswell
+# ifThenElse(int(substr(UtsnameNodename, 3))>=8000,int(substr(UtsnameNodename, 3))-7939, int(substr(UtsnameNodename, 3))) - ifThenElse(isUndefined(Gpus), 0, 201)
+
+# Default
+# NEGOTIATOR_PRE_JOB_RANK = (10000000 * My.Rank) + (1000000 * (RemoteOwner =?= UNDEFINED)) - (100000 * Cpus) - Memory
+
+# Prefer unclaimed partionable, and ordered by Skylake w/o GPU, Skylake w/ GPU, Haswell
+# NEGOTIATOR_PRE_JOB_RANK = \
+#     (10000000 * My.Rank) + \
+#     (10000000 * (RemoteOwner =?= UNDEFINED)) + \
+#     (100000*(ifThenElse(int(substr(UtsnameNodename, 3))>=8000,int(substr(UtsnameNodename, 3))-7939, int(substr(UtsnameNodename, 3))) - \
+#          ifThenElse(isUndefined(Gpus), 0, 201))) - \
+#     (100000 * Cpus) - \
+#     Memory
+
+# Prefer unclaimed partionable, and ordered by Haswell, Skylake w/o GPU, Skylake w/ GPU
+NEGOTIATOR_PRE_JOB_RANK = \
+     (10000000 * My.Rank) \
+     + (10000000 * (RemoteOwner =?= UNDEFINED)) \
+     - (10000000 * ifThenElse(int(substr(UtsnameNodename, 3))>=8000,int(substr(UtsnameNodename, 3))-7939, int(substr(UtsnameNodename, 3)))) \
+     - (100000 * Cpus) \
+     - Memory

@@ -1,0 +1,5 @@
+SUBMIT_REQUIREMENT_NAMES = $(SUBMIT_REQUIREMENT_NAMES) RestrictParallelMachineCount
+
+SUBMIT_REQUIREMENT_RestrictParallelMachineCount = JobUniverse != 11 || MaxHosts*RequestCpus <= 160
+SUBMIT_REQUIREMENT_RestrictParallelMachineCount_REASON = "Parallel jobs are restricted to a total of 160 cores"
+

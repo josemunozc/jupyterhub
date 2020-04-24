@@ -158,6 +158,14 @@
     state: started
     enabled: yes
 
+- name: add ligo motd
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: 0644
+
 - name: add ligo default environment
   template:
     src: etc_profile_ligo.sh.j2

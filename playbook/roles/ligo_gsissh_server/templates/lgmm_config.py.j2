@@ -53,6 +53,19 @@ WHITELIST = '/etc/grid-security/whitelist'
 # Assume that any account on LDAP has been already created.
 FORCE = True
 
-#OVERRIDES= [ {'conditions' : {'uid' : ['yiwen.huang']}, # uid can take any value
-#              'logins_append' : ['{uid}']},
-#             ]
+# Overrides
+# 1. Add albert.einstein to all users
+# 2. Remove spxae, c1234567, etc from all users
+OVERRIDES= [ {'conditions' : {
+                  'uid' : [],  # uid can take any value
+              },
+              'logins_prepend' : ['{uid}'],
+	      },
+	      {'conditions' : {
+                  '_logins' : ['~(spx.*|c[0-9]{7}|sismp2|sisgc5|sma8ls)']
+                  },
+               'logins_remove' : ['{_matches[0]}'],
+                  },
+             ]
+
+RANDOM_DELAY = False

@@ -1,6 +1,43 @@
 ---
 - name: Yum install gsi-openssh-server
-  yum: name=gsi-openssh-server
+  yum:
+    name:
+      - gsi-openssh-server
+    enablerepo: lscsoft-epel
+
+- name: Enable port 2222
+  lineinfile:
+    path: /etc/gsissh/sshd_config
+    regexp: '^Port 2222'
+    insertafter: 'Port 22'
+    line: 'Port 2222'
+
+- name: Copy ssh keys command
+  copy:
+    src: ligo_ssh_keys.sh
+    dest: /usr/local/bin/ligo_ssh_keys.sh
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable ssh keys command
+  lineinfile:
+    path: /etc/gsissh/sshd_config
+    regexp: '^#?AuthorizedKeysCommand '
+    line: 'AuthorizedKeysCommand /usr/local/bin/ligo_ssh_keys.sh'
+
+- name: Enable ssh keys command user
+  lineinfile:
+    path: /etc/gsissh/sshd_config
+    regexp: '^#?AuthorizedKeysCommandUser '
+    line: 'AuthorizedKeysCommandUser nobody'
+
+- name: Disable authorised keys file for everybody except admins
+  blockinfile:
+    path: /etc/ssh/sshd_config
+    block: |
+      Match Group !root,!hawk_admin
+      AuthorizedKeysFile    none
 
 - name: Copy SSH keys
   file:
@@ -15,24 +52,7 @@
     - ssh_host_rsa_key
     - ssh_host_rsa_key.pub
 
-#- firewalld:
-#    port: 2222/tcp
-#    permanent: yes
-#    state: enabled
-#
-#- name: Allow sshd to listen on tcp ports 22,2222
-#  seport:
-#    ports: 22,2222
-#    proto: tcp
-#    setype: ssh_port_t
-#    state: present
-#
-#- lineinfile:
-#    path: /etc/gsissh/sshd_config
-#    regexp: '^#Port 22'
-#    line: 'Port 2222'
-
-- name: Enable normal SSH
+- name: Disable normal SSH
   systemd:
     name: sshd
     state: stopped
@@ -44,13 +64,29 @@
     state: started
     enabled: yes
 
-#- name: Copy SSSD LIGO Config
-#  template:
-#    src: ligo_domain.conf.j2
-#    dest: /etc/sssd/conf.d/ligo.conf
-#    owner: root
-#    group: root
-#    mode: 0600
+- name: Copy SSSD LIGO Config
+  template:
+    src: ligo_domain.conf.j2
+    dest: /etc/sssd/conf.d/ligo.conf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Restrict default LDAP search
+  ini_file:
+    path: /etc/sssd/sssd.conf
+    section: domain/default
+    option: ldap_search_base
+    value: dc=supercomputingwales,dc=ac,dc=uk
+    backup: yes
+
+- name: Add Ligo domain to sssd
+  ini_file:
+    path: /etc/sssd/sssd.conf
+    section: sssd
+    option: domains
+    value: ligo.org, default
+    backup: yes
 
 - name: Make LIGO default Kerberos realm
   ini_file:
@@ -60,43 +96,26 @@
     value: LIGO.ORG
     backup: yes
 
-#- name: Add Ligo domain to sssd
-#  ini_file:
-#    path: /etc/sssd/sssd.conf
-#    section: sssd
-#    option: domains
-#    value: default, ligo.org
-#    backup: yes
+- name: Modify access file
+  lineinfile:
+    path: /etc/security/access.conf
+    line: '- : ALL EXCEPT ansible root c.mpmds c.sistg1 c.sbisa5 c.whcrm9 c.spxph c.spxdmm (LIGO) : ALL'
 
-#- name: Enable sssd ssh integration
-#  ini_file:
-#    path: /etc/sssd/sssd.conf
-#    section: sssd
-#    option: services
-#    value: nss, pam, autofs, ssh
-#    backup: yes
-#
-## On ssh for testing purposes, need to disable .ssh/authorised_keys file management
-#- lineinfile:
-#    path: /etc/ssh/sshd_config
-#    regexp: '^AuthorizedKeysFile      .ssh/authorized_keys'
-#    line: '#AuthorizedKeysFile none'
-#
-#- lineinfile:
-#    path: /etc/ssh/sshd_config
-#    regexp: '^#AuthorizedKeysCommand none'
-#    line: 'AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys'
-#
-#- lineinfile:
-#    path: /etc/ssh/sshd_config
-#    regexp: '^#AuthorizedKeysCommandUser nobody'
-#    line: 'AuthorizedKeysCommandUser root'
+- pause:
+    prompt: "This script will now attempt to extract the host certificate to /etc/grid-security/host{cert,key}.pem if they don't exist."
 
-#- name: Modify access file
-#  lineinfile:
-#    path: /etc/security/access.conf
-#    regexp: '- : ALL EXCEPT ansible root c.mpmds c.sistg1 c.sbisa5 c.whcrm9 c.spxph : ALL'
-#    line: '- : ALL EXCEPT ansible root c.mpmds c.sistg1 c.sbisa5 c.whcrm9 c.spxph paul.hopkins : ALL'
+- name: extract hostcert.pem
+  command: openssl pkcs12 -in /tmp/certBundle.p12  -out /etc/grid-security/hostcert.pem -nokeys -nodes -passin pass:123412341234
+           creates=/etc/grid-security/hostcert.pem
+
+- name: extract hostkey.pem
+  command: openssl pkcs12 -in /tmp/certBundle.p12  -out /etc/grid-security/hostkey.pem -nocerts -nodes -passin pass:123412341234
+           creates=/etc/grid-security/hostkey.pem
+
+- name: set hostkey.pem permissions
+  file:
+    path: /etc/grid-security/hostkey.pem
+    mode: '0600'
 
 - name: Yum install ligo-grid-mapfile-manager
   yum: name=ligo-grid-mapfile-manager
@@ -109,21 +128,29 @@
     group: root
     mode: 0644
 
-# touch a file, using symbolic modes to set the permissions (equivalent to 0644)
-- name: Prepare LGMM files
+- name: Prepare grid-mapfile
   file:
-    path: /etc/grid-security/whitelist
-    state: touch
-    owner: nobody
-    group: nobody
-    mode: 0644
-
-- file:
     path: /etc/grid-security/grid-mapfile
     state: touch
     owner: nobody
     group: nobody
     mode: 0644
+
+- name: Copy LGMM whitelist
+  template:
+    src: lgmm_whitelist.j2
+    dest: /etc/lgmm/whitelist
+    owner: nobody
+    group: nobody
+    mode: 0644
+
+- name: Create lgmm log directory
+  file:
+    path:  /var/log/lgmm
+    state: directory
+    owner: nobody
+    group: nobody
+    mode: 0755
 
 - name: Make sure lgmm is running
   service:
@@ -138,3 +165,32 @@
     owner: root
     group: root
     mode: 0644
+
+- name: Install Sync users virtualenv
+  pip:
+    name: ldap3
+    virtualenv: /opt/ligo_scw_sync
+
+- name: Copy ldap script
+  copy:
+    src: sync_ldap.py
+    dest: /opt/ligo_scw_sync/bin/sync_ldap.py
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy local settings
+  copy:
+    src: /root/local_settings.py
+    dest: /opt/ligo_scw_sync/bin/local_settings.py
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Create a sync_ldap cron.d file
+  cron:
+    name: sync_ldap
+    minute: "*/20"
+    user: root
+    job: "/opt/ligo_scw_sync/bin/python /opt/ligo_scw_sync/bin/sync_ldap.py -v 2>&1 | mail -Es 'LIGO SCW LDAP Sync CronJob' cardiff-ligo-cluster-admins@cf.onmicrosoft.com"
+    cron_file: sync_ldap

@@ -10,14 +10,19 @@
 
 - name: Copy base HTCondor config file
   template:
-    src: "000-common.conf.j2"
-    dest: /etc/condor/config.d/000-common.conf
+    src: "0-common.conf.j2"
+    dest: /etc/condor/config.d/0-common.conf
     owner: condor
     group: condor
     mode: 0644
     # Disable notify
     #  notify:
     #    - reload condor
+
+- name: Remove 000-common.conf file
+  file:
+    path: /etc/condor/config.d/000-common.conf
+    state: absent
 
 - name: Copy Submit config.d files
   template:

@@ -21,6 +21,10 @@ SHARE   = $(RELEASE_DIR)/share/condor
 PROCD_ADDRESS = $(RUN)/procd_pipe
 CONDOR_HOST = cl8-ib
 
+use SECURITY:HOST_BASED
+HAWK_SUBNET           = 172.2.0.0/16
+ALLOW_READ            = $(HAWK_SUBNET)
+
 # ensure all communication occurs over private network
 # may need to tweak when setting up flocking
 BIND_ALL_INTERFACES = False
@@ -32,14 +36,6 @@ DEFAULT_DOMAIN_NAME  = hawk.supercomputingwales.ac.uk
 UID_DOMAIN           = hawk.supercomputingwales.ac.uk
 TRUST_UID_DOMAIN     = True
 FILESYSTEM_DOMAIN    = hawk.supercomputingwales.ac.uk
-
-# https://htcondor.readthedocs.io/en/stable/admin-manual/security.html#example-of-authorization-security-configuration
-HAWK_SUBNET           = 172.2.0.0/16
-ALLOW_READ            = $(HAWK_SUBNET)
-ALLOW_WRITE           = $(CONDOR_HOST)
-ALLOW_ADMINISTRATOR   = root@$(UID_DOMAIN)/$(CONDOR_HOST)
-ALLOW_NEGOTIATOR      = condor@$(UID_DOMAIN)/$(CONDOR_HOST)
-ALLOW_DAEMON          = condor@$(UID_DOMAIN)/$(CONDOR_HOST)
 
 CONDOR_ADMIN = cardiff-ligo-cluster-admins@cf.onmicrosoft.com
 DAEMON_LIST = MASTER

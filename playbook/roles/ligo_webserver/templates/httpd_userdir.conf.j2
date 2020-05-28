@@ -12,12 +12,14 @@
 
 
 <Directory "/home/*/public_html">
-    AuthType shibboleth
-    ShibRequestSetting requireSession 1
+  AuthType shibboleth
+  ShibRequestSetting requireSession 1
 
-    <RequireAll>
-       Require shib-session
+  <RequireAll>
+     Require shib-session
+     <RequireAny>
        Require shib-attr isMemberOf Communities:LSCVirgoLIGOGroupMembers
        Require shib-attr isMemberOf gw-astronomy:KAGRA-LIGO:members
-    </RequireAll>
+     </RequireAny>
+  </RequireAll>
 </Directory>

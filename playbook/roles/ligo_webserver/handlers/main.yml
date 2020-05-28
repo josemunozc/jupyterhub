@@ -1,0 +1,14 @@
+- name: reload httpd
+  systemd:
+    name: httpd
+    state: reloaded
+
+- name: reload shibd
+  systemd:
+    name: httpd
+    state: reloaded
+
+- name: restart shibd
+  systemd:
+    name: httpd
+    state: restarted

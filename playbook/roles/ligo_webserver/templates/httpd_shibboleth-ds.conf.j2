@@ -1,0 +1,13 @@
+# Basic Apache configuration
+
+<IfModule mod_alias.c>
+  <Location /shibboleth-ds>
+    Require all granted
+    <IfModule mod_shib.c>
+      AuthType shibboleth
+      ShibRequestSetting requireSession false
+      require shibboleth
+    </IfModule>
+  </Location>
+  Alias /shibboleth-ds /srv/shibboleth-ds
+</IfModule>

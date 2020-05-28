@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+  <title>IDP select test bed</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-5" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="idpselect.css" />
+</head>
+
+<body>
+  <div id="idpSelecttest">
+    <div id="idpSelectIdPSelector">Select an Identity Provider....
+      <div id="idpSelectPreferredIdPTile">
+	<div class="IdPSelectPreferredIdPButton" title="LIGO">
+	  <a id="LIGOLink" href="">
+	    <div class="IdPSelectPreferredIdPImg"><img class="IdPSelectIdPImg" src="ligo.png" alt="LIGO" width="80" height="60"></div>
+	    <div class="IdPSelectTextDiv">LIGO</div>
+	  </a>
+	</div>
+	<div class="IdPSelectPreferredIdPButton" title="KAGRA">
+	  <a id="KAGRALink" href="">
+	    <div class="IdPSelectPreferredIdPImg"><img class="IdPSelectIdPImg" src="kagra.png" width="131" height="60" alt="DefaultLogo"></div>
+	    <div class="IdPSelectTextDiv">KAGRA</div>
+	  </a>
+	</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    let params = new URLSearchParams(location.search);
+    ret=params.get("return");
+    document.getElementById("KAGRALink").href=ret + "&entityID=https%3A%2F%2Fshibbi.pki.itc.u-tokyo.ac.jp%2Fidp%2Fshibboleth";
+    document.getElementById("LIGOLink").href=ret + "&entityID=https%3A%2F%2Flogin.ligo.org%2Fidp%2Fshibboleth";
+  </script>
+
+</body>
+</html>

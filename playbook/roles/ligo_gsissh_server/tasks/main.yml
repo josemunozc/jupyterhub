@@ -14,11 +14,11 @@
 
 - name: Copy ssh keys command
   copy:
-    src: ligo_ssh_keys.sh
+    src: ligo_and_kagra_ssh_keys.sh
     dest: /usr/local/bin/ligo_ssh_keys.sh
     owner: root
     group: root
-    mode: '0644'
+    mode: '0755'
 
 - name: Enable ssh keys command
   lineinfile:
@@ -34,10 +34,11 @@
 
 - name: Disable authorised keys file for everybody except admins
   blockinfile:
-    path: /etc/ssh/sshd_config
+    path: /etc/gsissh/sshd_config
+    backup: yes
     block: |
-      Match Group !root,!hawk_admin
-      AuthorizedKeysFile    none
+      Match Group LIGO
+        AuthorizedKeysFile    none
 
 - name: Copy SSH keys
   file:
@@ -66,26 +67,22 @@
 
 - name: Copy SSSD LIGO Config
   template:
-    src: ligo_domain.conf.j2
-    dest: /etc/sssd/conf.d/ligo.conf
+    src: "{{ item }}_domain.conf.j2"
+    dest: "/etc/sssd/conf.d/{{ item }}.conf"
     owner: root
     group: root
     mode: 0600
-
-- name: Restrict default LDAP search
-  ini_file:
-    path: /etc/sssd/sssd.conf
-    section: domain/default
-    option: ldap_search_base
-    value: dc=supercomputingwales,dc=ac,dc=uk
-    backup: yes
+  with_items:
+    - ligo
+    - ligo-operations
+    - kagra
 
 - name: Add Ligo domain to sssd
   ini_file:
     path: /etc/sssd/sssd.conf
     section: sssd
     option: domains
-    value: ligo.org, default
+    value: ligo.org, ligo-operations, kagra, default
     backup: yes
 
 - name: Make LIGO default Kerberos realm
@@ -101,16 +98,16 @@
     path: /etc/security/access.conf
     line: '- : ALL EXCEPT ansible root c.mpmds c.sistg1 c.sbisa5 c.whcrm9 c.spxph c.spxdmm (LIGO) : ALL'
 
-- pause:
-    prompt: "This script will now attempt to extract the host certificate to /etc/grid-security/host{cert,key}.pem if they don't exist."
-
-- name: extract hostcert.pem
-  command: openssl pkcs12 -in /tmp/certBundle.p12  -out /etc/grid-security/hostcert.pem -nokeys -nodes -passin pass:123412341234
-           creates=/etc/grid-security/hostcert.pem
-
-- name: extract hostkey.pem
-  command: openssl pkcs12 -in /tmp/certBundle.p12  -out /etc/grid-security/hostkey.pem -nocerts -nodes -passin pass:123412341234
-           creates=/etc/grid-security/hostkey.pem
+# - pause:
+#     prompt: "This script will now attempt to extract the host certificate to /etc/grid-security/host{cert,key}.pem if they don't exist."
+# 
+# - name: extract hostcert.pem
+#   command: openssl pkcs12 -in /tmp/certBundle.p12  -out /etc/grid-security/hostcert.pem -nokeys -nodes -passin pass:123412341234
+#            creates=/etc/grid-security/hostcert.pem
+# 
+# - name: extract hostkey.pem
+#   command: openssl pkcs12 -in /tmp/certBundle.p12  -out /etc/grid-security/hostkey.pem -nocerts -nodes -passin pass:123412341234
+#            creates=/etc/grid-security/hostkey.pem
 
 - name: set hostkey.pem permissions
   file:
@@ -128,10 +125,14 @@
     group: root
     mode: 0644
 
+- name: Create gridmapfile file
+  command: touch /etc/grid-security/grid-mapfile
+  args:
+    creates: /etc/grid-security/grid-mapfile
+
 - name: Prepare grid-mapfile
   file:
     path: /etc/grid-security/grid-mapfile
-    state: touch
     owner: nobody
     group: nobody
     mode: 0644
@@ -139,7 +140,7 @@
 - name: Copy LGMM whitelist
   template:
     src: lgmm_whitelist.j2
-    dest: /etc/lgmm/whitelist
+    dest: /etc/grid-security/whitelist
     owner: nobody
     group: nobody
     mode: 0644
@@ -164,7 +165,7 @@
     dest: /etc/motd
     owner: root
     group: root
-    mode: 0644
+    mode: 0744
 
 - name: add ligo default environment
   template:
@@ -174,31 +175,45 @@
     group: root
     mode: 0644
 
-- name: Install Sync users virtualenv
-  pip:
-    name: ldap3
-    virtualenv: /opt/ligo_scw_sync
+- name: Yum install ligo-grid-mapfile-manager
+  yum: name=ligo-grid-mapfile-manager
+
+- name: Create /root/bin/ directory
+  file:
+    path:  /root/bin
+    state: directory
+    owner: root
+    group: root
+    mode: 0750
+
+- name: Yum install python36-ldap3
+  yum:
+    name:
+      - python36-ldap3
+    enablerepo: lscsoft-epel
 
 - name: Copy ldap script
   copy:
     src: sync_ldap.py
-    dest: /opt/ligo_scw_sync/bin/sync_ldap.py
+    dest: /root/bin/
     owner: root
     group: root
-    mode: 0755
+    mode: 0750
 
-- name: Copy local settings
-  copy:
-    src: /root/local_settings.py
-    dest: /opt/ligo_scw_sync/bin/local_settings.py
+- name: Copy ldap_sync settings
+  template:
+    src: ligo_scw_sync_ldap_config.py.j2
+    dest: /etc/ligo_scw_sync_ldap_config.py
     owner: root
     group: root
     mode: 0600
+    variable_start_string: "[%"
+    variable_end_string:  "%]"
 
 - name: Create a sync_ldap cron.d file
   cron:
     name: sync_ldap
     minute: "*/20"
     user: root
-    job: "/opt/ligo_scw_sync/bin/python /opt/ligo_scw_sync/bin/sync_ldap.py -v 2>&1 | mail -Es 'LIGO SCW LDAP Sync CronJob' cardiff-ligo-cluster-admins@cf.onmicrosoft.com"
+    job: "/root/bin/sync_ldap.py -mv -l /root/sync_ldap_password.py 2>&1 | mail -Es 'LIGO SCW LDAP Sync CronJob' cardiff-ligo-cluster-admins@cf.onmicrosoft.com"
     cron_file: sync_ldap

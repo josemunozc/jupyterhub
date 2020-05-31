@@ -1,8 +1,8 @@
-[domain/ligo.org]
+[domain/kagra]
 
 autofs_provider = ldap
 cache_credentials = True
-ldap_search_base = ou=LIGO,ou=Institutions,ou=Users,dc=supercomputingwales,dc=ac,dc=uk?one?(&(uidNumber>=100000000)(uidNumber<=100039999))?ou=LIGO,ou=Institutions,ou=PrivateGroups,ou=Groups,dc=supercomputingwales,dc=ac,dc=uk?one?(&(uidNumber>=100000000)(uidNumber<=100039999))?cn=LIGO,ou=Institutions,ou=Groups,dc=supercomputingwales,dc=ac,dc=uk?base?
+ldap_search_base = ou=LIGO,ou=Institutions,ou=Users,dc=supercomputingwales,dc=ac,dc=uk?one?(&(uidNumber>=100050000)(uidNumber<=100060000))?ou=LIGO,ou=Institutions,ou=PrivateGroups,ou=Groups,dc=supercomputingwales,dc=ac,dc=uk?one?(&(uidNumber>=100050000)(uidNumber<=100060000))?cn=LIGO,ou=Institutions,ou=Groups,dc=supercomputingwales,dc=ac,dc=uk?base?
 id_provider = ldap
 ldap_uri = ldaps://csn2.hawk.supercomputingwales.ac.uk,ldaps://csn1.hawk.supercomputingwales.ac.uk
 
@@ -16,6 +16,5 @@ ldap_enumeration_refresh_timeout = 300
 
 ldap_tls_cacertdir = /etc/openldap/cacerts
 
-auth_provider = krb5
-krb5_realm = LIGO.ORG
+auth_provider = none
 chpass_provider = none

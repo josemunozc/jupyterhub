@@ -21,10 +21,11 @@
 
 # Do this manually because LIGO group is in LDAP,
 # and just using "usermod" does not work
+# Also add Jupyterhub group, for use later
 - name: Add apache user to LIGO
   lineinfile:
     path: /etc/group
-    line: "LIGO:x:6000005:apache"
+    line: "LIGO:x:6000005:apache,jupyterhub"
 
 - name: yum install shibboleth
   yum:
@@ -40,8 +41,7 @@
     state: directory
     owner: root
     group: root
-    mode: "u=rwx,g=rx,o=rx"
-  tags: letsencrypt
+    mode: "0750"
 
 - name: install getssl tool
   get_url:
@@ -56,6 +56,7 @@
     creates: /root/.getssl/getssl.cfg
 
 # Now edit getssl config
+# Or alternatively use this role: https://github.com/geerlingguy/ansible-role-certbot
 
 - name: Create getssl cronjob
   cron:
@@ -121,7 +122,8 @@
   with_items:
     - index.html
     - idpselect.css
-    - cardiff.gif
+    - kagra.png
+    - ligo.png
 
 - name: Copy httpd shibboleth-ds conf
   template:
@@ -154,9 +156,9 @@
   file:
     path: /var/www/html/secure
     state: directory
-    owner: cvmfs # Because we have file permission issues
-    group: cvmfs # Because we have file permission issues
-    mode: "750"
+    owner: root
+    group: root
+    mode: "755"
   tags: httpd
 
 - name: Start shibd

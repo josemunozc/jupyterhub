@@ -1,0 +1,49 @@
+#!/usr/bin/python
+
+from __future__ import print_function
+import sys
+import argparse
+import urllib
+import json
+import tempfile
+from os import unlink
+from shutil import copyfile
+
+helpString = ('Generate a JSON file that contains a list of shared accounts'
+              ' and its users for a given LIGO site')
+parser = argparse.ArgumentParser(description=helpString,
+                                 formatter_class=argparse.RawTextHelpFormatter)
+parser.add_argument("-f","--file", required=False, type=str,
+  help='Output filename, e.g. /etc/condor/accounting/valid_tags')
+parser.add_argument("-r","--regex", nargs='+', required=False, type=str,
+  help='Regular expression(s) that matches job tags for non-LIGO work')
+args = parser.parse_args()
+
+tags_uri = 'https://ldas-gridmon.ligo.caltech.edu/condor_account_group_names.json'
+try:
+  response = urllib.urlopen(tags_uri)
+  data = json.loads(response.read())
+except ValueError:
+  print("Unable to decode JSON accounting information from web!", file=sys.stderr)
+  exit(1)
+
+try:
+  job_tags = sorted(data['groups'])
+except KeyError:
+  print("Accounting information in unexpected format!", file=sys.stderr)
+
+if args.file:
+  with tempfile.NamedTemporaryFile(delete=False) as tag_file:
+    for tag in job_tags:
+      tag_file.write("* %s found\n" % tag)
+    if args.regex:
+      for regex in args.regex:
+        tag_file.write("* /%s/ found\n" % regex)
+  copyfile(tag_file.name, args.file)
+  unlink(tag_file.name)
+else:
+  for tag in job_tags:
+    print("* %s found" % tag)
+  if args.regex:
+    for regex in args.regex:
+      print("* /%s/ found" % regex)

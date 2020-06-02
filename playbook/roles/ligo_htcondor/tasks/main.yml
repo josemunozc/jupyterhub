@@ -15,9 +15,6 @@
     owner: condor
     group: condor
     mode: 0644
-    # Disable notify
-    #  notify:
-    #    - reload condor
 
 - name: Remove 000-common.conf file
   file:
@@ -42,9 +39,6 @@
     - 07-transfers.conf
     - 08-premption.conf
   when: "'ligo_login' in group_names"
-  # Disable notify
-  #  notify:
-  #    - reload condor
 
 - name: Copy Compute config.d files
   template:
@@ -61,9 +55,6 @@
     - 52-singularity.conf
     - 60-job-memory.conf
   when: "'ligo_all_nodes' in group_names"
-  # Disable notify
-  #  notify:
-  #    - reload condor
 
 - name: Copy facter script
   template:
@@ -93,17 +84,18 @@
     - condor_accounting_users
     - condor_accounting_tags
 
-# Need to workout when these files change and then update accordingly
+# Need to workout when the valid_users and valid_tags files change and then reload condor
+# Perhaps with a daily cron job, but I haven't done it very regularly
 - name: Generate HTCondor valid users
   command: /usr/local/bin/condor_accounting_users -s cdf -f /etc/condor/accounting/valid_users
-  args:
-    creates: /etc/condor/accounting/valid_users
+  # args:
+  #   creates: /etc/condor/accounting/valid_users
   when: "'ligo_login' in group_names"
 
 - name: Generate HTCondor valid tags
   command: /usr/local/bin/condor_accounting_tags -r '^aluk\.(dev|prod|sim)\.(s6|o1|o2|o3|o4)\.(burst|cbc|cw|detchar|sgwb)\..+' -f /etc/condor/accounting/valid_tags
-  args:
-    creates: /etc/condor/accounting/valid_tags
+  # args:
+  #   creates: /etc/condor/accounting/valid_tags
   when: "'ligo_login' in group_names"
 
 - name: Copy ldg-report script

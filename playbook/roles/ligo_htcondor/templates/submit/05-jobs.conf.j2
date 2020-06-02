@@ -16,9 +16,9 @@ SYSTEM_PERIODIC_REMOVE      = (JobStatus == 5) && (time() - EnteredCurrentStatus
 SYSTEM_PERIODIC_HOLD = (NumShadowExceptions > 20) || (NumShadowStarts > 100) || ((JobStatus == 1 || JobStatus == 2) && (MemoryUsage > 1.5*RequestMemory))|| ( JobUniverse != 7 && ( (RemoteWallClockTime+time()-ShadowBday)/86400 > 45*$(DAY) ) && GrantedExtension != True )
 
 SYSTEM_PERIODIC_HOLD_REASON = ifThenElse(MemoryUsage > 1.5*RequestMemory, \
-			                 strcat("MemoryUsage ", MemoryUsage, " MB > RequestMemory ", RequestMemory, " MB."), \
-			      ifThenElse((RemoteWallClockTime+time()-ShadowBday)/86400 > 45*$(DAY), \
-					 "Job exceeded execution time of 45 days. Please contact grav-it@astro.cf.ac.uk", \
-			      ifThenElse((NumShadowExceptions > 20) || (NumShadowStarts > 100), \
-					 strcat("NumShadowExceptions: ", NumShadowExceptions, " > 20 or NumShadowStarts: ", NumShadowStarts, " > 100"), \
-					 "")))
+                                         strcat("MemoryUsage ", MemoryUsage, " MB > RequestMemory ", RequestMemory, " MB."), \
+                              ifThenElse((RemoteWallClockTime+time()-ShadowBday)/86400 > 45*$(DAY), \
+                                         "Job exceeded execution time of 45 days. Please contact grav-it@astro.cf.ac.uk", \
+                              ifThenElse((NumShadowExceptions > 20) || (NumShadowStarts > 100), \
+                                         strcat("NumShadowExceptions: ", NumShadowExceptions, " > 20 or NumShadowStarts: ", NumShadowStarts, " > 100"), \
+                                         "")))

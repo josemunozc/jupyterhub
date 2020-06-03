@@ -5,7 +5,7 @@ Alias /ldg-reports/ "/var/www/ldg-reports/"
     AuthType shibboleth
 
     ShibRequestSetting requireSession 1
-    # Default to LIGO IdP to enable central accounting robot to login
-    ShibRequestSetting entityID https://login.ligo.org/idp/shibboleth
+    # Allow unauthenticated requests from LIGO Caltech nodes
+    Require host ligo.caltech.edu
     Require shib-session
 </Directory>

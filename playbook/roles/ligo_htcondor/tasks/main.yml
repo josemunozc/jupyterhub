@@ -38,6 +38,10 @@
     - 06-logs.conf
     - 07-transfers.conf
     - 08-premption.conf
+    - 10-requirements.conf
+    - 11-negotiator.conf
+    - 20-gpu-attributes.conf
+    - 52-singularity.conf
   when: "'ligo_login' in group_names"
 
 - name: Copy Compute config.d files

@@ -137,3 +137,37 @@
     mode="0644"
   notify: reload httpd
   when: "'ligo_login' in group_names"
+
+- name: Copy check_x509_expiry script
+  copy:
+    src: check_x509_expiry.sh
+    dest: /usr/local/bin/check_x509_expiry.sh
+    mode: '0755'
+  when: "'ligo_login' in group_names"
+
+- name: Create an check_x509_expiry cron.d file
+  cron:
+    name: check_x509_expiry
+    special_time: daily
+    user: root
+    job: /usr/local/bin/check_x509_expiry.sh
+    cron_file: check_x509_expiry
+  when: "'ligo_login' in group_names"
+
+- name: Copy parallel_nodes_orchestrator.py script
+  copy:
+    src: parallel_nodes_orchestrator.py
+    dest: /usr/local/bin/parallel_nodes_orchestrator.py
+    mode: '0755'
+  when: "'ligo_login' in group_names"
+
+- name: Create an parallel_nodes_orchestrator.py cron.d file
+  cron:
+    name: parallel_nodes_orchestrator
+    minute: 0
+    hour: 6-16
+    weekday: 1-5
+    user: root
+    job: /usr/local/bin/parallel_nodes_orchestrator.py
+    cron_file: parallel_nodes_orchestrator
+  when: "'ligo_login' in group_names"

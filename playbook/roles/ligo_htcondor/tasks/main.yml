@@ -168,6 +168,6 @@
     hour: 6-16
     weekday: 1-5
     user: root
-    job: /usr/local/bin/parallel_nodes_orchestrator.py
+    job: '/usr/local/bin/parallel_nodes_orchestrator.py 2>&1  | mail -Es "Hawk Parallel Nodes Orchestrator" cardiff-ligo-cluster-admins@cf.onmicrosoft.com'
     cron_file: parallel_nodes_orchestrator
   when: "'ligo_login' in group_names"

@@ -5,8 +5,8 @@ After=network-online.target
 
 [Service]
 User={{ server_user }}
-Environment="PATH=/opt/anaconda/bin:/sbin:/bin:/usr/sbin:/usr/bin"
-ExecStart=/opt/anaconda/bin/jupyterhub --JupyterHub.spawner_class=sudospawner.SudoSpawner
+Environment="PATH=/opt/miniconda3/bin:/sbin:/bin:/usr/sbin:/usr/bin"
+ExecStart=/opt/miniconda3/bin/jupyterhub --JupyterHub.spawner_class=sudospawner.SudoSpawner
 WorkingDirectory={{ working_directory }}
 Restart=on-failure
 

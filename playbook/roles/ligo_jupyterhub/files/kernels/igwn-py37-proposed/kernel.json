@@ -1,0 +1,8 @@
+{
+ "argv": [
+  "/usr/local/share/jupyter/kernels/igwn-py37-proposed/start.sh",
+  "{connection_file}"
+ ],
+ "display_name": "igwn-py37-proposed",
+ "language": "python"
+}

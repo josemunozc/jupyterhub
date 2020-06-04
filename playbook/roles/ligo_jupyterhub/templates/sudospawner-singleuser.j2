@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source /etc/profile.d/ligo.sh Jupyter
+
+# For printing notebooks
+export PATH=$PATH:/usr/local/texlive/2019/bin/x86_64-linux
+
+# Display memory limit on Jupyter interface
+export MEM_LIMIT=$(( 100 *1024*1024*1024))
+
+# Delegate the notebook server launch to the jupyterhub-singleuser script.
+# this is how most sudospawner-singleuser scripts should end.
+exec /opt/miniconda3/bin/jupyterhub-singleuser $@

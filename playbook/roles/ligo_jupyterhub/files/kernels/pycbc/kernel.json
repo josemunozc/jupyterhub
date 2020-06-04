@@ -1,0 +1,9 @@
+{
+ "display_name": "PyCBC", 
+ "language": "python", 
+ "argv": [
+  "/usr/local/share/jupyter/kernels/pycbc/start.sh",
+  "-f", 
+  "{connection_file}"
+ ]
+}

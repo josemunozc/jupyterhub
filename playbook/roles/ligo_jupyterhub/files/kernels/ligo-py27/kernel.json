@@ -1,0 +1,8 @@
+{
+ "display_name": "ligo-py27", 
+ "language": "python", 
+ "argv": [
+  "/usr/local/share/jupyter/kernels/ligo-py27/start.sh",
+  "{connection_file}"
+ ]
+}

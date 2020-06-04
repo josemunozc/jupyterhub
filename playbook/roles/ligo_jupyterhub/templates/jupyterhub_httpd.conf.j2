@@ -1,0 +1,35 @@
+ProxyVia On
+ProxyRequests Off
+ProxyPreserveHost on
+
+Redirect /jupyter /jupyter/
+
+<Location "/jupyter/">
+    AuthType shibboleth
+    ShibRequestSetting requireSession 1
+
+    <RequireAll>
+       Require shib-session
+       Require shib-attr isMemberOf Communities:LVC:LSC:LDG:CDF:LDGCDFUsers
+       Require shib-attr isMemberOf Communities:LSCVirgoLIGOGroupMembers
+    </RequireAll>
+
+    Header edit Origin "%{SERVER_NAME}" 127.0.0.1:8000
+    RequestHeader edit Origin "%{SERVER_NAME}" 127.0.0.1:8000
+    Header edit Referrer "%{SERVER_NAME}" 127.0.0.1:8000
+    RequestHeader edit Referrer "%{SERVER_NAME}" 127.0.0.1:8000
+
+    RequestHeader set REMOTE_USER %{REMOTE_USER}s
+    RequestHeader edit REMOTE_USER "@LIGO.ORG" ""
+
+    # Useful for testing logging in as another user
+    #RequestHeader edit REMOTE_USER "paul.hopkins" "albert.einstein"
+
+    ProxyPass http://127.0.0.1:8000/jupyter/
+    ProxyPassReverse http://127.0.0.1:8000/jupyter/
+
+    RewriteEngine on
+    RewriteCond %{HTTP:UPGRADE} ^websocket$ [NC]	
+    RewriteCond %{HTTP:CONNECTION} Upgrade$ [NC]
+    RewriteRule /jupyter/(.*) ws://127.0.0.1:8000/jupyter/$1 [P]
+</Location>

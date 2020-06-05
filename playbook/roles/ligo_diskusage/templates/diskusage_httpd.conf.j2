@@ -1,0 +1,12 @@
+ScriptAliasMatch /diskusage/(.*) /srv/diskusage/duc.sh
+
+<Location "/diskusage/">
+    AuthType shibboleth
+    ShibRequestSetting requireSession 1
+
+    <RequireAll>
+       Require shib-session
+       Require shib-attr isMemberOf Communities:LVC:LSC:LDG:CDF:LDGCDFUsers
+       Require shib-attr isMemberOf Communities:LSCVirgoLIGOGroupMembers
+    </RequireAll>
+</Location>

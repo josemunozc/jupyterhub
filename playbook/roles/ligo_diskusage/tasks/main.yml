@@ -1,0 +1,71 @@
+- name: Copy getusers script
+  template:
+    src: get_users.j2
+    dest: /root/bin/get_users
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy duc_db.sh script
+  template:
+    src: duc_db.sh.j2
+    dest: /root/bin/duc_db.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy update_duc_header.sh script
+  template:
+    src: update_duc_header.sh.j2
+    dest: /root/bin/update_duc_header.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create a duc_db cron.d job
+  cron:
+    name: duc_db
+    special_time: daily
+    user: root
+    job: '/root/bin/duc_db.sh &> /var/log/duc_dbs_$( date +"\%d" ).log'
+    cron_file: duc_diskusage
+
+- name: Create a update_duc_header cron.d job
+  cron:
+    name: duc_db_header
+    special_time: daily
+    user: root
+    job: /root/bin/update_duc_header.sh
+    cron_file: duc_diskusage
+
+- name: Create diskusage web directory
+  file:
+    path: /srv/diskusage
+    state: directory
+    owner: root
+    group: root
+    mode: "755"
+
+- name: Copy duc.sh web files
+  copy:
+    src: "{{ item }}"
+    dest: "/srv/diskusage/{{ item }}"
+    owner: root
+    group: root
+    mode: "preserve"
+  with_items:
+    - duc.sh
+    - header.template.html
+
+- name: Generate header file if it does not already exist
+  command: /root/bin/update_duc_header.sh
+  args:
+    creates: /srv/diskusage/header.html
+
+- name: Copy diskusage httpd conf
+  template:
+    src=diskusage_httpd.conf.j2
+    dest=/etc/httpd/conf.d/diskusage.conf
+    owner=root
+    group=root
+    mode="0644"

@@ -1,0 +1,9 @@
+- name: Add cron job to convert HTCondor Accounting to SCW
+  copy:
+    src: condor_history
+    dest: /etc/cron.daily/condor_history
+    owner: root
+    group: root
+    mode: "0744"
+
+

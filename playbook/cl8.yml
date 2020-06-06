@@ -1,0 +1,41 @@
+- hosts: cl8
+  roles:
+   - ligo_essentials
+   - ligo_gsissh_server
+   - ligo_fail2ban
+   - ligo_userlimits
+   - ligo_webserver
+   - ligo_cvmfs
+   - ligo_singularity
+   - ligo_htcondor
+   - ligo_scw_accounting
+   - ligo_miniconda
+   - ligo_jupyterhub
+   - ligo_diskusage
+   - ligo_pegasus_dashboard
+   - ligo_backup
+   - ligo_accounting_portal
+  vars:
+    shibboleth_entityid: https://ligo.gravity.cf.ac.uk/shibboleth-sp
+    ldg_cluster_name: ARCCA-CDF
+
+# Instead of custom Grafana role, perhaps this is better
+#    - role: cloudalchemy.grafana
+#      vars:
+#        grafana_security:
+#          admin_user: admin
+#          admin_password: uYxv6mqX
+#        grafana_url: https://ligo.gravity.cf.ac.uk/accounting/
+#        grafana_datasources:
+#          - name: LDG Reports
+#            type: mysql
+#            database: ligo_accounting
+#            user: grafanaReader
+#            password: 7shQ7zRdpaCE
+#            is_default: yes
+#        grafana_plugins:
+#          - grafana-piechart-panel
+#        grafana_auth:
+#          anonymous:
+#            org_name: "LIGO UK"
+#            org_role: Viewer

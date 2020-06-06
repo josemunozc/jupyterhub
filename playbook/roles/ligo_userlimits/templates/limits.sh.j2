@@ -1,0 +1,8 @@
+#!/bin/sh
+
+PAM_UID=$(getent passwd "${PAM_USER}" | cut -d: -f3)
+
+if [ "${PAM_UID}" -gt 100000000 ]; then
+    /usr/bin/systemctl set-property "user-${PAM_UID}.slice" \
+                       CPUQuota=1000% MemoryLimit=100G CPUAccounting=true MemoryAccounting=true
+fi

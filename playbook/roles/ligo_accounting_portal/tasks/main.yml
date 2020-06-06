@@ -1,0 +1,121 @@
+---
+- name: Add Grafana repository
+  yum_repository:
+    name: grafana
+    description: grafana
+    baseurl: https://packages.grafana.com/oss/rpm
+    gpgkey: https://packages.grafana.com/gpg.key
+    gpgcheck: yes
+    sslverify: 1
+    sslcacert: /etc/pki/tls/certs/ca-bundle.crt
+    backup: yes
+
+- name: Yum install MariaDB and Grafana
+  yum:
+    name:
+      - mariadb-server
+      - grafana
+      - MySQL-python
+
+- name: Start MariaDB and enabled on compute
+  systemd:
+    state: started
+    name: mariadb
+    enabled: yes
+
+
+- name: Set MariaDB root password.
+  mysql_user: 
+    name: root 
+    password: aRqvcn6TWbJjJz
+
+# broken
+#- name: Add MariaDB conf file
+#  ini_file:
+#    path: /root/.my.cnf
+#    mode: '0600'
+#    section: client
+#    option: "{{ item.0 }}"
+#    value: "{{ item.1 }}"
+#  with_items:
+#    - ["user", "root"]
+#    - ["password", "aRqvcn6TWbJjJz"]
+
+- name: Create ligo accounting database
+  mysql_db:
+    name: ligo_accounting
+    state: present
+
+# Copy the following into a file, and then run the import
+# create table ldg_reports (username varchar(40), tag varchar(100), cpuhours mediumint unsigned, date date, site varchar(20));
+#  UNIQUE KEY `unique_fields` (`username`,`tag`,`date`,`site`)
+#- name: Import database structure
+#  mysql_db:
+#    state: import
+#    name: ligo_accounting
+#    target: /tmp/.sql
+#
+#- name: Create grafana user with readonly ligo_accounting database privileges
+#  mysql_user:
+#    name: grafanaReader
+#    password: 7shQ7zRdpaCE
+#    priv: 'logo_accounting.*:SELECT'
+#    state: present
+
+# Start adding existing data with e.g.
+# for i in /var/www/ldg-reports/ARCCA-CDF_2019-0*.txt; do
+#     mysql -e "LOAD DATA INFILE '$i' INTO TABLE ldg_reports FIELDS TERMINATED BY ' ';" ligo_accounting;
+# done
+
+- name: Add condor history cron job
+  cron:
+    name: ldg-report-mysql
+    minute: 0
+    hour: 4
+    user: root
+    job: "/bin/mysql -e \"LOAD DATA INFILE '/var/www/ldg-reports/ARCCA-CDF_\"$(date --utc +\\%F --date='1 day ago')\".txt' INTO TABLE ldg_reports FIELDS TERMINATED BY ' ';\" ligo_accounting"
+    cron_file: ldg-report-mysql
+
+#Ansible: ldg-report-mysql
+#0 4 * * * root /bin/mysql -e "LOAD DATA INFILE '/var/www/ldg-reports/ARCCA-CDF_"$(date --utc +\%F --date='1 day ago')".txt' INTO TABLE# ldg_reports FIELDS TERMINATED BY ' ';" ligo_accounting
+
+# Add a cronjob to add new data:
+# filename=/var/www/ldg-reports/`date --utc +\%F --date="1 day ago"`.ldg
+# mysql -e "LOAD DATA INFILE '${filename}' INTO TABLE ldg_reports FIELDS TERMINATED BY ' ';" grafana
+
+- name: Copy grafana httpd.conf file
+  template:
+    src: "grafana.conf.j2"
+    dest: /etc/httpd/conf.d/grafana.conf
+    mode: 0644
+  notify:
+    - reload httpd
+
+- name: Update grafana configuration
+  ini_file:
+    path: /etc/grafana/grafana.ini
+    backup: yes
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { section: "server", option: "root_url", value: "https://ligo.gravity.cf.ac.uk/accounting/" }
+    - { section: "auth.anonymous", option: "enabled", value: "True" }
+    - { section: "auth.anonymous", option: "org_name", value: "LIGO UK" }
+    - { section: "auth.anonymous", option: "org_role", value: "Viewer" }
+    - { section: "security", option: "admin_password", value: "uYxv6mqX" }
+
+- name: Start Grafana server
+  systemd:
+    state: started
+    name: grafana-server
+    enabled: yes
+
+# This is a bit of a hack and there is probably a better way
+# - name: Set default anonymous user default dashboard
+#   command: '/bin/sqlite3 /var/lib/grafana/grafana.db "update preferences set home_dashboard_id=1 where user_id = 0;"'
+
+# Now add default Grafana dashboard from the templates config file
+# If using Ansible 2.5 you could use grafana_dashboard role
+
+

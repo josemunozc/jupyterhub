@@ -7,12 +7,14 @@
       - cvmfs-config-default
       - osg-ca-certs
 
-- lineinfile:
+- name: Use EGI cvmfs config by default
+  lineinfile:
     path:  /etc/cvmfs/default.d/60-egi.conf
-    regexp: '^# /etc/cvmfs/default.d/50-cern.conf'
+    regexp: '^CVMFS_CONFIG_REPOSITORY=config-egi.egi.eu'
     line: 'CVMFS_CONFIG_REPOSITORY=config-egi.egi.eu'
 
-- lineinfile:
+- name: Enable AutoFS for cvmfs
+  lineinfile:
     path:  /etc/auto.master
     line: '/cvmfs /etc/auto.cvmfs'
 

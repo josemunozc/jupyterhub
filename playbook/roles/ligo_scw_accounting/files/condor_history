@@ -4,6 +4,8 @@ for day in {0..7}; do
     files=history.$(date --utc +\%Y%m%d --date="$day day ago")T
     rsync -va /var/lib/condor/spool/$files* .
     for file in $( ls $files* | grep -v "\.tsv" ); do 
-        [ -f $file.tsv ] || condor_history  -file $file -constraint " JobUniverse != 7 " -af:jt  LigoSearchUser LigoSearchTag Qdate JobStartDate CompletionDate ' ifthenelse(MachineAttrcpuinfo_model0 =?= UNDEFINED, "85", MachineAttrcpuinfo_model0)' RequestCpus CPUsUsage RemoteUserCPU RemoteSysCPU RequestMemory MemoryUsage RemoteWallClocktime >  $file.tsv
+        [ -f $file.tsv ] || condor_history  -file $file -constraint " JobUniverse != 7 " -af:jt  LigoSearchUser LigoSearchTag Qdate JobStartDate CompletionDate ' ifthenelse(MachineAttrcpuinfo_model0 =?= UNDEFINED, "85", MachineAttrcpuinfo_model0)' RequestCpus CPUsUsage RemoteUserCPU RemoteSysCPU RequestMemory MemoryUsage RemoteWallClocktime >  $file.tsv;
+        [ -f $file.tsv ] || condor_history  -file $file -constraint " JobUniverse != 7 " -af:jt  LigoSearchUser LigoSearchTag Qdate JobStartDate CompletionDate ' ifthenelse(MachineAttrcpuinfo_model0 =?= UNDEFINED, "85", MachineAttrcpuinfo_model0)' RequestCpus CPUsUsage CumulativeRemoteUserCPU CumulativeRemoteSysCPU RequestMemory MemoryUsage RemoteWallClocktime >  /home/condor/stats/ligo_compare/$file.tsv;
+
     done
 done

@@ -3,7 +3,7 @@
     src: "{{ item }}"
     dest: "/root/bin/{{ item }}"
     owner: root
-    mode: '0755'
+    mode: "0755"
   with_items:
     - home_backup.sh
     - home_backup_cron.sh
@@ -13,7 +13,7 @@
     src: rsnapshot_by_user.conf
     dest: /etc/rsnapshot_by_user.conf
     owner: root
-    mode: '0644'
+    mode: "0644"
 
 - name: Create semiweekly cron job
   cron:

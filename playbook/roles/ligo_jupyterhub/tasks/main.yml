@@ -99,7 +99,7 @@
     dest: /usr/local/share/jupyter/
     owner: root
     group: root
-    mode: 'preserve'
+    mode: preserve
 
 - name: start jupyterhub service
   service: name=jupyterhub

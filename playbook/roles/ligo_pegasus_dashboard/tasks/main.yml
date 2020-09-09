@@ -16,7 +16,7 @@
     dest: /var/www/pegasus/pegasus-service.wsgi
     owner: apache
     group: apache
-    mode: '0644'
+    mode: "0644"
     force: no
 
 - name: Do not manage authentication on the dashboard
@@ -43,6 +43,6 @@
     dest: /etc/httpd/conf.d/pegasus.conf
     owner: apache
     group: apache
-    mode: '0644'
+    mode: "0644"
     force: no
 

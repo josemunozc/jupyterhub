@@ -33,7 +33,7 @@
 #- name: Add MariaDB conf file
 #  ini_file:
 #    path: /root/.my.cnf
-#    mode: '0600'
+#    mode: "0600"
 #    section: client
 #    option: "{{ item.0 }}"
 #    value: "{{ item.1 }}"
@@ -87,7 +87,7 @@
   template:
     src: "grafana.conf.j2"
     dest: /etc/httpd/conf.d/grafana.conf
-    mode: 0644
+    mode: "0644"
   notify:
     - reload httpd
 

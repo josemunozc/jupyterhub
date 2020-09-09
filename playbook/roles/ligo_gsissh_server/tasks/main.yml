@@ -18,7 +18,7 @@
     dest: /usr/local/bin/ligo_ssh_keys.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
 
 - name: Enable ssh keys command
   lineinfile:
@@ -71,7 +71,7 @@
     dest: "/etc/sssd/conf.d/{{ item }}.conf"
     owner: root
     group: root
-    mode: 0600
+    mode: "0600"
   with_items:
     - ligo
     - ligo-operations
@@ -112,7 +112,7 @@
 - name: set hostkey.pem permissions
   file:
     path: /etc/grid-security/hostkey.pem
-    mode: '0600'
+    mode: "0600"
 
 - name: Yum install ligo-grid-mapfile-manager
   yum: name=ligo-grid-mapfile-manager
@@ -123,7 +123,7 @@
     dest: /etc/lgmm/lgmm_config.py
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: Create gridmapfile file
   command: touch /etc/grid-security/grid-mapfile
@@ -135,7 +135,7 @@
     path: /etc/grid-security/grid-mapfile
     owner: nobody
     group: nobody
-    mode: 0644
+    mode: "0644"
 
 - name: Copy LGMM whitelist
   template:
@@ -143,7 +143,7 @@
     dest: /etc/grid-security/whitelist
     owner: nobody
     group: nobody
-    mode: 0644
+    mode: "0644"
 
 - name: Create lgmm log directory
   file:
@@ -151,7 +151,7 @@
     state: directory
     owner: nobody
     group: nobody
-    mode: 0755
+    mode: "0755"
 
 - name: Make sure lgmm is running
   service:
@@ -165,7 +165,7 @@
     dest: /etc/motd
     owner: root
     group: root
-    mode: 0744
+    mode: "0744"
 
 - name: add ligo default environment
   template:
@@ -173,7 +173,7 @@
     dest: /etc/profile.d/ligo.sh
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: Yum install ligo-grid-mapfile-manager
   yum: name=ligo-grid-mapfile-manager
@@ -184,7 +184,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0750
+    mode: "0750"
 
 - name: Yum install python36-ldap3
   yum:
@@ -198,7 +198,7 @@
     dest: /root/bin/
     owner: root
     group: root
-    mode: 0750
+    mode: "0750"
 
 - name: Copy ldap_sync settings
   template:
@@ -206,7 +206,7 @@
     dest: /etc/ligo_scw_sync_ldap_config.py
     owner: root
     group: root
-    mode: 0600
+    mode: "0600"
     variable_start_string: "[%"
     variable_end_string:  "%]"
 

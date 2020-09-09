@@ -14,7 +14,7 @@
     dest: /etc/condor/config.d/0-common.conf
     owner: condor
     group: condor
-    mode: 0644
+    mode: "0644"
 
 - name: Remove 000-common.conf file
   file:
@@ -27,7 +27,7 @@
     dest: /etc/condor/config.d/{{ item }}
     owner: condor
     group: condor
-    mode: 0644
+    mode: "0644"
   with_items:
     - 00-role.conf
     - 01-security.conf
@@ -50,7 +50,7 @@
     dest: /etc/condor/config.d/{{ item }}
     owner: condor
     group: condor
-    mode: 0644
+    mode: "0644"
   with_items:
     - 00-role.conf
     - 40-gpu.conf
@@ -66,7 +66,7 @@
     dest: /usr/local/bin/
     owner: condor
     group: condor
-    mode: 0755
+    mode: "0755"
 
 - name: Disable HTCondor from starting automatically on all nodes
   systemd:
@@ -82,7 +82,7 @@
   copy:
     src: "{{ item }}"
     dest: /usr/local/bin/{{ item }}
-    mode: '0755'
+    mode: "0755"
   when: "'ligo_login' in group_names"
   with_items:
     - condor_accounting_users
@@ -106,7 +106,7 @@
   copy:
     src: ldg-report
     dest: /usr/local/bin/ldg-report
-    mode: '0755'
+    mode: "0755"
   when: "'ligo_login' in group_names"
 
 - name: Create ldg-report httpd directory
@@ -142,7 +142,7 @@
   copy:
     src: check_x509_expiry.sh
     dest: /usr/local/bin/check_x509_expiry.sh
-    mode: '0755'
+    mode: "0755"
   when: "'ligo_login' in group_names"
 
 - name: Create an check_x509_expiry cron.d file
@@ -158,7 +158,7 @@
   copy:
     src: parallel_nodes_orchestrator.py
     dest: /usr/local/bin/parallel_nodes_orchestrator.py
-    mode: '0755'
+    mode: "0755"
   when: "'ligo_login' in group_names"
 
 - name: Create an parallel_nodes_orchestrator.py cron.d file

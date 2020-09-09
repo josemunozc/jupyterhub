@@ -12,7 +12,7 @@
    dest: /etc/fail2ban/jail.local
    owner: root
    group: root
-   mode: "u=rw,g=r,o=r"
+   mode: "0644"
    backup: yes
   notify:
    - restart fail2ban
@@ -25,7 +25,7 @@
    dest: /etc/fail2ban/filter.d/sshd.conf
    owner: root
    group: root
-   mode: "u=rw,g=r,o=r"
+   mode: "0644"
    backup: yes
   notify:
    - restart fail2ban

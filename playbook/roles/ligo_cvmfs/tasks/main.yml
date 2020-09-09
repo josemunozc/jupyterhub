@@ -30,7 +30,7 @@
     dest: /etc/cvmfs/default.local
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: Copy osgstorage config
   template:
@@ -38,7 +38,7 @@
     dest: /etc/cvmfs/domain.d/osgstorage.org.local
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: Copy ligo.osgstorage.org.conf
   template:
@@ -46,7 +46,7 @@
     dest: /etc/cvmfs/config.d/ligo.osgstorage.org.conf
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: Copy gwosc.osgstorage.org.conf
   template:
@@ -54,4 +54,4 @@
     dest: /etc/cvmfs/config.d/gwosc.osgstorage.org.conf
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"

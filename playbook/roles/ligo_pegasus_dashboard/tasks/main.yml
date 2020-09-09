@@ -9,6 +9,7 @@
   file:
     path: /var/www/pegasus
     state: directory
+    mode: "0755"
 
 - name: Copy pegasus wsgi file
   copy:

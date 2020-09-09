@@ -2,7 +2,7 @@
 
 - name: reminder for grub settings
   debug:
-    msg: 
+    msg:
     - "If this is first run have you done(?):"
     - "grep \"^menuentry\" /boot/grub2/grub.cfg | cut -d \"'\" -f2"
     - "grub2-set-default 0"

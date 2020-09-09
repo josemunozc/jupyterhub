@@ -7,7 +7,6 @@
     group: root
     mode: "0755"
 
-
 - name: Insert security limits after systemd rule
   pamd:
     name: "{{ item }}"

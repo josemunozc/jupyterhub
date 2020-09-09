@@ -6,6 +6,6 @@
       dest: /etc/security/access.conf
       owner: root
       group: root
-      mode: 0600
+      mode: "0600"
       backup: "yes"
 ...

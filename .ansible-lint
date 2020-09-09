@@ -1,0 +1,3 @@
+skip_list:
+  - '204'  # don't worry about line length for now
+  - '403'  # allow state=latest for package installs

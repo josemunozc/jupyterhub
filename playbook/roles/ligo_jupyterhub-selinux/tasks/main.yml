@@ -6,36 +6,36 @@
          state=installed
 
   - name: Copy SELinux type enforcement files to tmp
-    copy: src={{item}}.te
+    copy: src={{ item }}.te
           dest=/tmp/
     with_items: "{{ jh_selinux_modules }}"
 
   # Compile, convert install selinux modules
   - name: Compile SELinux module files (mod files)
-    command: checkmodule -M -m -o /tmp/{{item}}.mod /tmp/{{item}}.te
+    command: checkmodule -M -m -o /tmp/{{ item }}.mod /tmp/{{ item }}.te
     with_items: "{{ jh_selinux_modules }}"
 
   - name: Build SELinux policy packages (pp files)
-    command: semodule_package -o /tmp/{{item}}.pp -m /tmp/{{item}}.mod
+    command: semodule_package -o /tmp/{{ item }}.pp -m /tmp/{{ item }}.mod
     with_items: "{{ jh_selinux_modules }}"
 
   - name: Load (install) SELinux policy packages
-    command: semodule -i /tmp/{{item}}.pp
+    command: semodule -i /tmp/{{ item }}.pp
     with_items: "{{ jh_selinux_modules }}"
 
   # Remove temporary files from module install
   - name: Remove temporary files (.te)
-    file: path=/tmp/{{item}}.te
+    file: path=/tmp/{{ item }}.te
           state=absent
     with_items: "{{ jh_selinux_modules }}"
 
   - name: Remove temporary files (.mod)
-    file: path=/tmp/{{item}}.mod
+    file: path=/tmp/{{ item }}.mod
           state=absent
     with_items: "{{ jh_selinux_modules }}"
 
   - name: Remove temporary files (.pp)
-    file: path=/tmp/{{item}}.pp
+    file: path=/tmp/{{ item }}.pp
           state=absent
     with_items: "{{ jh_selinux_modules }}"
 

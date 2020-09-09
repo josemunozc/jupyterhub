@@ -44,13 +44,13 @@
     file:
       path: /root/.ssh
       state: directory
-      mode: '0700'
+      mode: "0700"
 
   - name: Create root .ssh/authorized_keys if does not exist
     file:
       path: /root/.ssh/authorized_keys
       state: touch
-      mode: '0600'
+      mode: "0600"
 
   - name: Setup root authorized keys
     authorized_key:
@@ -100,7 +100,7 @@
       state: started
       enabled: 'yes'
 
-  - name: yum clean all
+  - name: yum clean all  # noqa 303 (yum module doesn't support clean)
     command: yum clean all
 
   - name: install node packages - ib (non-gpu)

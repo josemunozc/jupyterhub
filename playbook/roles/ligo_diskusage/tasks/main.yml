@@ -4,7 +4,7 @@
     dest: /root/bin/get_users
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: Copy duc_db.sh script
   template:
@@ -12,7 +12,7 @@
     dest: /root/bin/duc_db.sh
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: Copy update_duc_header.sh script
   template:
@@ -20,7 +20,7 @@
     dest: /root/bin/update_duc_header.sh
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: Create a duc_db cron.d job
   cron:
@@ -44,7 +44,7 @@
     state: directory
     owner: root
     group: root
-    mode: "755"
+    mode: "0755"
 
 - name: Copy duc.sh web files
   copy:
@@ -52,7 +52,7 @@
     dest: "/srv/diskusage/{{ item }}"
     owner: root
     group: root
-    mode: "preserve"
+    mode: preserve
   with_items:
     - duc.sh
     - header.template.html

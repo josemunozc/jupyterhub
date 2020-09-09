@@ -9,7 +9,6 @@
    - ligo_singularity
    - ligo_htcondor
    - ligo_scw_accounting
-   - ligo_miniconda
    - ligo_jupyterhub
    - ligo_diskusage
    - ligo_pegasus_dashboard

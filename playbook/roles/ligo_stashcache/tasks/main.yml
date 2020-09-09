@@ -100,7 +100,7 @@
       state: started
       enabled: 'yes'
 
-  - name: yum clean all
+  - name: yum clean all  # noqa 303 (yum module doesn't support clean)
     command: yum clean all
 
   - name: install node packages - ib (non-gpu)

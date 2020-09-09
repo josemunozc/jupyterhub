@@ -1,5 +1,6 @@
 ---
-- rpm_key:
+- name: Add HTCondor GPG Key
+  rpm_key:
     key: https://research.cs.wisc.edu/htcondor/yum/RPM-GPG-KEY-HTCondor
 
 - name: create htcondor.repo

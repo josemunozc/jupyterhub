@@ -153,7 +153,8 @@
     command: sysctl --system
 
   - name: systemctl daemon-reload
-    command: systemctl daemon-reload
+    systemd:
+      daemon_reload: yes
 
   - name: enable and restart docker
     systemd:
@@ -172,7 +173,8 @@
       - kubectl
 
   - name: systemctl daemon-reload
-    command: systemctl daemon-reload
+    systemd:
+      daemon_reload: yes
 
   - name: enable and restart kubelet
     systemd:

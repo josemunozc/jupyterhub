@@ -35,6 +35,12 @@
     state: latest
     enablerepo: lscsoft*
 
+- name: Yum install Condor tools
+  yum:
+    name:
+      - python2-condor
+      - python3-condor
+
 - name: Yum install self management tools
   yum:
     name:

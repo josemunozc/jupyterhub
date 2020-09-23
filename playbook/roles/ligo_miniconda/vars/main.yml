@@ -1,0 +1,2 @@
+---
+miniconda_conda_bin: "{{ miniconda_prefix }}/condabin/conda"

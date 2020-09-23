@@ -6,11 +6,15 @@ c.JupyterHub.extra_log_file = '/var/log/jupyterhub/jupyterhub.log'
 c.Spawner.args = []
 
 #c.Spawner.debug = True
-c.Authenticator.admin_users = ("c.spxph","paul.hopkins", "c.spxdmm", "duncan.macleod")
+c.Authenticator.admin_users = (
+    "c.spxdmm", "duncan.macleod",
+)
 c.NotebookApp.allow_origin = '*'
 c.KernelSpecManager.ensure_native_kernel = False
-c.Spawner.args = ['--KernelSpecManager.ensure_native_kernel=False',
-                  '--SingleUserNotebookApp.allow_origin="*"',
-                                    ]
+c.Spawner.args = [
+    '--KernelSpecManager.ensure_native_kernel=False',
+    '--SingleUserNotebookApp.allow_origin="*"',
+]
+
 # Make JupyterLab the default
 c.Spawner.default_url = '/lab'

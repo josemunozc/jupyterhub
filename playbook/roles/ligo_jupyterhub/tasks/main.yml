@@ -1,107 +1,156 @@
 ---
 - name: install jupyterhub deps
-  yum: name={{ item }} state=installed
-  with_items:
-      - npm
+  yum:
+    name:
       - nodejs
+      - npm
+      - systemd
+    state: installed
 
-# If you require printing notebooks I suggest that you install texlive
-# using a role like this https://github.com/y-yu/ansible-texlive
-
-# Jupyterhub sudo group needed for sudospawner
-- name: Create Jupyterhub group
+- name: create Jupyterhub group for sudospawner
   group:
-      name={{ server_sudo_group }}
-      state=present
+    name: "{{ jupyter_server_sudo_group }}"
+    state: present
 
-- name: Create Jupyterhub user
+- name: create Jupyterhub user
   user:
-      name={{ server_user }}
-      comment="jupyterhub server user"
-      system="yes"
-      state=present
-      createhome="no"
-      shell=/sbin/nologin
-      groups={{ server_sudo_group }}
+    name: "{{ jupyter_server_user }}"
+    comment: "jupyterhub server user"
+    system: "yes"
+    state: present
+    createhome: "no"
+    shell: /sbin/nologin
+    groups: "{{ jupyter_server_sudo_group }}"
 
-- name: Copy jupyterhub sudoers file
-  template: src=jupyterhub.sudofile.j2
-            dest=/etc/sudoers.d/jupyterhub
-            owner=root
-            group=root
-            mode="u=rw,g=r,o=r"
-
-# - name: Copy jupyter install script over
-#   template: src=install-jupyterhub.sh.j2
-#             dest=/root/install-jupyterhub.sh
-#             owner=root
-#             group=root
-#             mode="u=rwx"
-#
-#  - name: Copy jupyterhub sudospawner install script
-#    template: src=install-jh-sudospawner.sh.j2
-#              dest=/root/install-jh-sudospawner.sh
-#              owner=root
-#              group=root
-#              mode="u=rwx"
-#
-#  - name: Git clone sudospawner
-#    git: repo='https://github.com/jupyterhub/sudospawner.git'
-#         dest='{{ sudospawn_clone_dir }}'
-#         version='{{ sudospawner_ver }}'
-#
-#  - name: Run jupyter install script - installs Py2 and Py3 kernels
-#    shell: /root/install-jupyterhub.sh
-#           creates=/opt/anaconda/bin/jupyterhub
-
-#  - name: Run jupyterhub sudospawner install script
-#    shell: /root/install-jh-sudospawner.sh 2&> /tmp/install-jupyterhub-sudospawner.log
-#
-##  - include: R-kernel.yml
-##  - include: bash-kernel.yml
-#
-
-# Install extra packages into Conda environment
-# Install kernerls into here: /usr/local/share/jupyter/kernels/
-
-- name: Copy Jupyter config file over
-  template: src=jupyterhub_config.py.j2
-            dest='{{ working_directory }}/jupyterhub_config.py'
-            owner={{ server_user }}
-            group=root
-            mode="u=rw,g=r,o=r"
-
-- name: Copy Jupyter sudospawner config file over
-  template: src=sudospawner-singleuser.j2
-            dest=/opt/miniconda3/bin/sudospawner-singleuser
-            owner=root
-            group=root
-            mode="u=rwx,g=rx,o=rx"
-
-- name: Copy systemd service file over
-  template: src=jupyterhub.service.j2
-            dest=/lib/systemd/system/jupyterhub.service
-            owner=root
-            group=root
-            mode="u=rwx,g=r,o=r"
-
-- name: Copy jupyter httpd conf
+- name: copy jupyterhub sudoers file
   template:
-    src=jupyterhub_httpd.conf.j2
-    dest=/etc/httpd/conf.d/jupyter.conf
-    owner=root
-    group=root
-    mode="0644"
+    src: jupyterhub.sudofile.j2
+    dest: /etc/sudoers.d/jupyterhub
+    owner: root
+    group: root
+    mode: "0644"
+    validate: /usr/sbin/visudo -cf %s
 
-- name: Copy jupyter kernels
+- name: create jupyterhub config directory
+  file:
+    path: "{{ jupyterhub_config_directory }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: copy Jupyter config file over
+  template:
+    src: jupyterhub_config.py.j2
+    dest: "{{ jupyterhub_config_directory }}/jupyterhub_config.py"
+    owner: "{{ jupyter_server_user }}"
+    group: root
+    mode: "0644"
+
+- name: create temporary directory
+  tempfile:
+    state: directory
+    suffix: jupyterhub
+  register: jupyterhub_tempdir
+
+- name: copy jupyterhub environment file
+  copy:
+    src: jupyterhub-environment.yml
+    dest: "{{ jupyterhub_tempdir.path }}/environment.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  register: jupyterhub_environment_yaml
+
+- name: check jupyterhub environment exists
+  stat:
+    path: "{{ jupyterhub_prefix }}"
+  register: jupyterhub_environment
+
+- name: create jupyterhub environment
+  command: "{{ miniconda_conda_bin }} env create
+    --file {{ jupyterhub_environment_yaml.dest }}
+    --prefix {{ jupyterhub_prefix }}
+    --quiet"
+  when: not jupyterhub_environment.stat.exists
+
+- name: update jupyterhub environment
+  command: "{{ miniconda_conda_bin }} env update
+    --file {{ jupyterhub_environment_yaml.dest }}
+    --prefix {{ jupyterhub_prefix }}
+    --quiet"
+  when: jupyterhub_environment.stat.exists
+
+- name: delete tempdir
+  file:
+    path: "{{ jupyterhub_tempdir.path }}"
+    state: absent
+
+- name: copy Jupyter sudospawner config file over
+  template:
+    src: sudospawner-singleuser.j2
+    dest: "{{ jupyterhub_prefix }}/bin/sudospawner-singleuser"
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: copy systemd service file over
+  template:
+    src: jupyterhub.service.j2
+    dest: /lib/systemd/system/jupyterhub.service
+    owner: root
+    group: root
+    mode: "0744"
+
+- name: copy jupyter httpd conf
+  template:
+    src: jupyterhub_httpd.conf.j2
+    dest: /etc/httpd/conf.d/jupyter.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: copy static jupyter kernels
   copy:
     src: kernels
-    dest: /usr/local/share/jupyter/
+    dest: "{{ jupyterhub_datadir }}"
     owner: root
     group: root
     mode: preserve
 
+- name: provision IGWN jupyter kernels
+  file:
+    path: "{{ jupyterhub_datadir }}/kernels/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  with_items:
+    - "{{ igwn_env_name }}"
+
+- name: create IGWN jupyter kernel.json
+  template:
+    src: kernel.json.j2
+    dest: "{{ jupyterhub_datadir }}/kernels/{{ item }}/kernel.json"
+  with_items:
+    - "{{ igwn_env_name }}"
+
+- name: create IGWN jupyter start.sh
+  template:
+    src: start.sh.j2
+    dest: "{{ jupyterhub_datadir }}/kernels/{{ item }}/start.sh"
+  with_items:
+    - "{{ igwn_env_name }}"
+
+- name: create IGWN jupyter logo
+  copy:
+    src: igwn-logo-64x64.png
+    dest: "{{ jupyterhub_datadir }}/kernels/{{ item }}/logo-64x64.png"
+  with_items:
+    - "{{ igwn_env_name }}"
+
 - name: start jupyterhub service
-  service: name=jupyterhub
-           state=started
-           enabled=yes
+  service:
+    name: jupyterhub
+    state: started
+    enabled: yes

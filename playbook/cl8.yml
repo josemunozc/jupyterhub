@@ -14,6 +14,7 @@
    - ligo_pegasus_dashboard
    - ligo_backup
    - ligo_accounting_portal
+   - ligo_guide
   vars:
     shibboleth_entityid: https://ligo.gravity.cf.ac.uk/shibboleth-sp
     ldg_cluster_name: ARCCA-CDF

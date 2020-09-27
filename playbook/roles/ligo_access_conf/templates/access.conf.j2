@@ -120,5 +120,4 @@
 #
 # All other users should be denied to get access from all sources.
 #- : ALL : ALL
-+ : root : ALL
-- : ALL EXCEPT {{ ligo_ssh_user }} : ALL
+- : ALL EXCEPT {{ ligo_ssh_users|join(' ') }} : ALL

@@ -1,3 +1,14 @@
 ---
-ligo_ssh_user: 'c.spxph c.spxdmm'
+ligo_ssh_users:
+  - root
+  # tools
+  - ansible
+  # administrators
+  - c.mpmds
+  - c.sbisa5
+  - c.sistg1
+  - c.spxdmm
+  - c.whcrm9
+  # all LIGO group members
+  - (LIGO)
 ...

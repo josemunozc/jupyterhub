@@ -5,9 +5,6 @@
    - ligo_fail2ban
    - ligo_userlimits
    - ligo_webserver
-   - ligo_cvmfs
-   - ligo_singularity
-   - ligo_htcondor
    - ligo_scw_accounting
    - ligo_jupyterhub
    - ligo_diskusage

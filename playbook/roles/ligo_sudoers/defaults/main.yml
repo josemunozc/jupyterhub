@@ -1,0 +1,17 @@
+---
+ligo_sudo_tasks:
+  # software
+  - /usr/bin/yum
+  # logging
+  - /usr/bin/cat /var/log/syslog
+  # condor
+  - /usr/bin/condor_*
+  - /usr/sbin/condor*
+  - /usr/bin/systemctl restart condor
+  - /usr/bin/systemctl enable condor
+  - /usr/bin/systemctl disable condor
+  # cvmfs
+  - /usr/bin/cvmfs*
+  - /bin/umount /cvmfs/*
+  - /bin/umount -l /cvmfs/*
+...

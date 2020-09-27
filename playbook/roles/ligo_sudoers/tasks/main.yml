@@ -1,20 +1,11 @@
 ---
-
-#- name: Update /etc/sudoers with rules for Paul Hopkins
-#  lineinfile:
-#    path: /etc/sudoers
-#    backup: 'yes'
-#    regexp: '^c.spxph'
-#    line: 'c.spxph   ALL=(ALL) NOPASSWD: /usr/bin/yum, /usr/bin/cat /var/log/syslog, /usr/bin/condor_*, /usr/sbin/condor*, /usr/bin/cvmfs*, /bin/umount /cvmfs/*, /bin/umount -l /cvmfs/*, /usr/bin/systemctl restart condor'
-#    validate: /usr/sbin/visudo -cf %s
-
-- name: Update /etc/sudoers with rules for Duncan Macleod
+- name: Update sudoers
   lineinfile:
     path: /etc/sudoers
-    backup: 'yes'
-    regexp: '^c.spxdmm'
-    line: 'c.spxdmm   ALL=(ALL) NOPASSWD: /usr/bin/yum, /usr/bin/cat /var/log/syslog, /usr/bin/condor_*, /usr/sbin/condor*, /usr/bin/cvmfs*, /bin/umount /cvmfs/*, /bin/umount -l /cvmfs/*, /usr/bin/systemctl restart condor, /usr/bin/systemctl enable condor, /usr/bin/systemctl disable condor'
+    backup: yes
+    regexp: "^{{ item }}"
+    line: "{{ item }}   ALL=(ALL) NOPASSWD: {{ ligo_sudo_tasks|join(', ') }}"
     validate: /usr/sbin/visudo -cf %s
-
-
+  with_items:
+    - c.spxdmm
 ...

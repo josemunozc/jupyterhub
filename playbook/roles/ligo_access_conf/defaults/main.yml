@@ -1,5 +1,11 @@
 ---
+# compute nodes
 ligo_ssh_users:
+  # administrators
+  - c.spxdmm
+
+# login nodes
+ligo_login_ssh_users:
   - root
   # tools
   - ansible

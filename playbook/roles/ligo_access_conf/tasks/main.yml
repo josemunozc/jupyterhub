@@ -1,11 +1,10 @@
 ---
-- block:
-  - name: copy access.conf
-    template:
-      src: access.conf.j2
-      dest: /etc/security/access.conf
-      owner: root
-      group: root
-      mode: "0600"
-      backup: "yes"
+- name: copy access.conf
+  template:
+    src: access.conf.j2
+    dest: /etc/security/access.conf
+    owner: root
+    group: root
+    mode: "0600"
+    backup: "yes"
 ...

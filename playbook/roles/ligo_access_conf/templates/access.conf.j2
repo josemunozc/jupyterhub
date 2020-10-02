@@ -120,5 +120,9 @@
 #
 # All other users should be denied to get access from all sources.
 #- : ALL : ALL
+{% if "ligo_servers" in group_names -%}
+- : ALL EXCEPT {{ ligo_login_ssh_users|join(' ') }} : ALL
+{%- else %}
 + : root : ALL
-- : ALL EXCEPT {{ ligo_ssh_user }} : ALL
+- : ALL EXCEPT {{ ligo_ssh_users|join(' ') }} : ALL
+{%- endif %}

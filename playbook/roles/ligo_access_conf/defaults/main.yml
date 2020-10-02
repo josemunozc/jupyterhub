@@ -1,3 +1,20 @@
 ---
-ligo_ssh_user: 'c.spxph c.spxdmm'
+# compute nodes
+ligo_ssh_users:
+  # administrators
+  - c.spxdmm
+
+# login nodes
+ligo_login_ssh_users:
+  - root
+  # tools
+  - ansible
+  # administrators
+  - c.mpmds
+  - c.sbisa5
+  - c.sistg1
+  - c.spxdmm
+  - c.whcrm9
+  # all LIGO group members
+  - (LIGO)
 ...

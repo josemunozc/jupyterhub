@@ -1,0 +1,11 @@
+name: jupyterhub
+channels:
+  - conda-forge
+dependencies:
+  - configurable-http-proxy
+  - jupyterlab
+  - pip
+  - python=3.8
+  - sudospawner
+  - pip:
+    - jhub_remote_user_authenticator

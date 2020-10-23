@@ -1,7 +1,7 @@
 # the command(s) the Hub can run on behalf of the above users without needing a password
 # the exact path may differ, depending on how sudospawner was installed
-Cmnd_Alias JUPYTER_CMD = /opt/miniconda3/bin/sudospawner
+Cmnd_Alias JUPYTER_CMD = {{ jupyterhub_prefix }}/bin/sudospawner
 
 # actually give the Hub user permission to run the above command on behalf
 # of the above users without prompting for a password
-{{ server_user }} ALL=(%{{ server_sudo_group }}) NOPASSWD:JUPYTER_CMD
+{{ jupyter_server_user }} ALL=(%{{ jupyter_server_sudo_group }}) NOPASSWD:JUPYTER_CMD

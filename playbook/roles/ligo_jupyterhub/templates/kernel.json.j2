@@ -1,0 +1,8 @@
+{
+ "argv": [
+  "{{ jupyterhub_datadir }}/kernels/{{ item }}/start.sh",
+  "{connection_file}"
+ ],
+ "display_name": "{{ item }}",
+ "language": "python"
+}

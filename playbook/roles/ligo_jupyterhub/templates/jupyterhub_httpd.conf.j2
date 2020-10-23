@@ -22,9 +22,6 @@ Redirect /jupyter /jupyter/
     RequestHeader set REMOTE_USER %{REMOTE_USER}s
     RequestHeader edit REMOTE_USER "@LIGO.ORG" ""
 
-    # Useful for testing logging in as another user
-    #RequestHeader edit REMOTE_USER "paul.hopkins" "albert.einstein"
-
     ProxyPass http://127.0.0.1:8000/jupyter/
     ProxyPassReverse http://127.0.0.1:8000/jupyter/
 

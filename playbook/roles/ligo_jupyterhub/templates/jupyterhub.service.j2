@@ -4,10 +4,10 @@ Requires=firewalld.service
 After=network-online.target
 
 [Service]
-User={{ server_user }}
-Environment="PATH=/opt/miniconda3/bin:/sbin:/bin:/usr/sbin:/usr/bin"
-ExecStart=/opt/miniconda3/bin/jupyterhub --JupyterHub.spawner_class=sudospawner.SudoSpawner
-WorkingDirectory={{ working_directory }}
+User={{ jupyter_server_user }}
+Environment="PATH={{ jupyterhub_prefix }}/bin:/sbin:/bin:/usr/sbin:/usr/bin"
+ExecStart={{ jupyterhub_prefix }}/bin/jupyterhub --JupyterHub.spawner_class=sudospawner.SudoSpawner
+WorkingDirectory={{ jupyterhub_config_directory }}
 Restart=on-failure
 
 [Install]

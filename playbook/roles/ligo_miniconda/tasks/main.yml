@@ -1,0 +1,38 @@
+---
+- name: check for existing miniconda
+  stat:
+    path: "{{ miniconda_conda_bin }}"
+  changed_when: false
+  register: miniconda_conda
+
+- name: get installed miniconda version
+  command: "{{ miniconda_conda_bin }} --version"
+  changed_when: false
+  register: installed_conda_version
+  when: miniconda_conda.stat.exists
+
+- name: check installed miniconda version
+  set_fact:
+    installed_conda_version: "{{ installed_conda_version.stdout | regex_search(version_output, '\\1') | first }}"
+  vars:
+    version_output: 'conda (.+)'
+  when: installed_conda_version.stdout is defined
+
+# install miniconda
+- when: not miniconda_conda.stat.exists or installed_conda_version < miniconda_min_version
+  block:
+    - name: download miniconda installer
+      get_url:
+        url: "{{ miniconda_installer_url }}"
+        dest: "/tmp/{{ miniconda_installer_url | basename }}"
+        mode: "0755"
+
+    - name: install miniconda
+      command: "bash /tmp/{{ miniconda_installer_url | basename }} -b -p {{ miniconda_prefix }}"
+      args:
+        creates: "{{ miniconda_prefix }}"
+
+    - name: delete miniconda installer
+      file:
+        path: "/tmp/{{ miniconda_installer_url | basename }}"
+        state: absent

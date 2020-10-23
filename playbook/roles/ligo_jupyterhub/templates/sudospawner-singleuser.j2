@@ -10,4 +10,4 @@ export MEM_LIMIT=$(( 100 *1024*1024*1024))
 
 # Delegate the notebook server launch to the jupyterhub-singleuser script.
 # this is how most sudospawner-singleuser scripts should end.
-exec /opt/miniconda3/bin/jupyterhub-singleuser $@
+exec {{ jupyterhub_prefix }}/bin/jupyterhub-singleuser $@

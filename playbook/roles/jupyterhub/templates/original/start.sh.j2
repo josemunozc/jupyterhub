@@ -1,0 +1,3 @@
+#!/bin/sh
+. {{ igwn_conda_root }}/bin/activate {{ item }}
+{{ igwn_conda_root }}/envs/{{ item }}/bin/python -m ipykernel_launcher -f $@

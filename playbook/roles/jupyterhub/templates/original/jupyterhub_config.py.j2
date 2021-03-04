@@ -1,0 +1,20 @@
+#c.Application.log_level = 'DEBUG'
+c.JupyterHub.authenticator_class = 'jhub_remote_user_authenticator.remote_user_auth.RemoteUserLocalAuthenticator'
+c.JupyterHub.base_url = '/jupyter'
+#c.JupyterHub.debug_proxy = True
+c.JupyterHub.extra_log_file = '{{ jupyterhub_log_directory }}/jupyterhub.log'
+c.Spawner.args = []
+
+#c.Spawner.debug = True
+c.Authenticator.admin_users = (
+    "vagrant", "vagrant",
+)
+c.NotebookApp.allow_origin = '*'
+c.KernelSpecManager.ensure_native_kernel = False
+c.Spawner.args = [
+    '--KernelSpecManager.ensure_native_kernel=False',
+    '--SingleUserNotebookApp.allow_origin="*"',
+]
+
+# Make JupyterLab the default
+c.Spawner.default_url = '/lab'

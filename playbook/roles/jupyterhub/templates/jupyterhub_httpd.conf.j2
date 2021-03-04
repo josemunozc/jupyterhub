@@ -1,0 +1,44 @@
+# This directive controls the use of the Via: HTTP header by the proxy. If set to 
+# On, each request and reply will get a Via: header line added for the current host.
+ProxyVia On
+
+# This allows or prevents Apache httpd from functioning as a forward proxy server. 
+# In a typical reverse proxy or gateway configuration, this option should be set to
+# Off.
+ProxyRequests Off
+
+# When enabled, this option will pass the Host: line from the incoming request to the
+# proxied host, instead of the hostname specified in the ProxyPass line.
+# This option should normally be turned Off. It is mostly useful in special 
+# configurations like proxied mass name-based virtual hosting, where the original 
+# Host header needs to be evaluated by the backend server.
+ProxyPreserveHost on
+
+Redirect /jupyter /jupyter/
+
+<Location "/jupyter/">
+    AuthType shibboleth
+    ShibRequestSetting requireSession 1
+
+    <RequireAll>
+       Require shib-session
+       Require shib-attr isMemberOf Communities:LVC:LSC:LDG:CDF:LDGCDFUsers
+       Require shib-attr isMemberOf Communities:LSCVirgoLIGOGroupMembers
+    </RequireAll>
+
+    Header edit Origin "%{SERVER_NAME}" 127.0.0.1:8000
+    RequestHeader edit Origin "%{SERVER_NAME}" 127.0.0.1:8000
+    Header edit Referrer "%{SERVER_NAME}" 127.0.0.1:8000
+    RequestHeader edit Referrer "%{SERVER_NAME}" 127.0.0.1:8000
+
+    RequestHeader set REMOTE_USER %{REMOTE_USER}s
+    RequestHeader edit REMOTE_USER "@LIGO.ORG" ""
+
+    ProxyPass http://127.0.0.1:8000/jupyter/
+    ProxyPassReverse http://127.0.0.1:8000/jupyter/
+
+    RewriteEngine on
+    RewriteCond %{HTTP:UPGRADE} ^websocket$ [NC]	
+    RewriteCond %{HTTP:CONNECTION} Upgrade$ [NC]
+    RewriteRule /jupyter/(.*) ws://127.0.0.1:8000/jupyter/$1 [P]
+</Location>

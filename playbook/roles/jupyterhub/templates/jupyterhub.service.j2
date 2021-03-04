@@ -1,0 +1,14 @@
+[Unit]
+Description=JupyterHub
+Requires=firewalld.service
+After=network-online.target
+
+[Service]
+User={{ jupyter_server_user }}
+Environment="PATH={{ jupyterhub_prefix }}/bin:/sbin:/bin:/usr/sbin:/usr/bin"
+ExecStart={{ jupyterhub_prefix }}/bin/jupyterhub &>> /var/log/jupyterhub.log
+WorkingDirectory={{ jupyterhub_config_directory }}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

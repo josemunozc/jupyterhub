@@ -1,9 +1,0 @@
-- name: reload condor
-  systemd:
-    name: condor
-    state: reloaded
-
-- name: reload httpd
-  systemd:
-    name: httpd
-    state: reloaded

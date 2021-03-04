@@ -1,0 +1,10 @@
+c.Application.log_level = 10
+c.JupyterHub.spawner_class = 'sudospawner.SudoSpawner'
+c.SudoSpawner.sudospawner_path = '/opt/jupyterhub/bin/sudospawner'
+#c.JupyterHub.base_url = '/jupyter'
+# Make JupyterLab the default
+c.Spawner.default_url = '/lab'
+c.ConfigurableHTTPProxy.command = '/opt/jupyterhub/bin/configurable-http-proxy'
+
+# If used with PAM and Centos
+c.PAMAuthenticator.open_sessions = False

@@ -1,4 +1,0 @@
----
-dependencies:
-  - role: ligo_miniconda
-  - role: ligo_webserver

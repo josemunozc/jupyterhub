@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+# Show environment info in the log to aid debugging
+/opt/miniconda3/bin/conda info
+
+# Delegate the notebook server launch to the jupyterhub-singleuser script.
+# this is how most sudospawner-singleuser scripts should end.
+exec {{ jupyterhub_prefix }}/bin/jupyterhub-singleuser $@

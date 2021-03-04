@@ -1,5 +1,0 @@
----
-
-disable_selinux: "False"
-
-...

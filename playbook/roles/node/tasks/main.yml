@@ -1,0 +1,20 @@
+---
+- name: download nodejs repo installer
+  get_url:
+    url: "https://rpm.nodesource.com/setup_15.x"
+    dest: "/tmp/nodejsrepo"
+    mode: "0755"
+
+- name: Install nodejs repository
+  command: "bash /tmp/nodejsrepo"
+  become: true
+
+# npm is installed as part of nodejs
+- name: install jupyterhub deps
+  yum:
+    name:
+      - nodejs
+      - systemd
+      - httpd
+    state: installed
+  become: true

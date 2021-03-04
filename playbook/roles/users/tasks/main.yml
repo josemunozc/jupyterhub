@@ -1,0 +1,12 @@
+---
+# password created with:
+# python -c 'import crypt; print crypt.crypt("This is my Password", "$1$SomeSalt$")'
+- name: create test user
+  user:
+    name: zerpiko
+    comment: test user
+    create_home: yes
+    generate_ssh_key: yes
+    groups: jhubgroup
+    password: $1$SomeSalt$XgfpKR2efNKxm4BwLDvfq/
+  become: yes

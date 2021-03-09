@@ -2,7 +2,8 @@
   roles:
    - essentials
 #   - proxy
-   - ligo_miniconda
-   - ligo_node
-   - { role: ligo_jupyterhub, become: yes }
+   - miniconda
+   - node
+   - firewall
+   - { role: jupyterhub, become: yes }
    - users

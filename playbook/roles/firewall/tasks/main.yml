@@ -1,0 +1,7 @@
+---
+- name: install firewalld
+  yum:
+    name:
+      - firewalld
+    state: latest
+  become: "True"

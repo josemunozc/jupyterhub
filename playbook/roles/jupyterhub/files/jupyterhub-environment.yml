@@ -9,3 +9,4 @@ dependencies:
   - sudospawner
   - pip:
     - jhub_remote_user_authenticator
+    - oauthenticator

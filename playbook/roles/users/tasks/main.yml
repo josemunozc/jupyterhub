@@ -10,3 +10,13 @@
     groups: jhubgroup
     password: $1$SomeSalt$XgfpKR2efNKxm4BwLDvfq/
   become: yes
+
+- name: create test user
+  user:
+    name: josem
+    comment: test user
+    create_home: yes
+    generate_ssh_key: yes
+    groups: jhubgroup
+    password: $1$SomeSalt$XgfpKR2efNKxm4BwLDvfq/
+  become: yes

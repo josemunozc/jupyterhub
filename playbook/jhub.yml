@@ -2,8 +2,8 @@
   roles:
    - essentials
 #   - proxy
-   - miniconda
-   - node
-   - firewall
-   - { role: jupyterhub, become: yes }
+#   - miniconda
+#   - node
+#   - firewall
+#   - { role: jupyterhub, become: yes }
    - users

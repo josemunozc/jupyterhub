@@ -93,7 +93,7 @@
 
 - name: copy Jupyter config file over
   template:
-    src: jupyterhub_config.py.j2
+    src: jupyterhub_config_iris_iam.py.j2
     dest: "{{ jupyterhub_config_directory }}/jupyterhub_config.py"
     owner: "{{ jupyter_server_user }}"
     group: root

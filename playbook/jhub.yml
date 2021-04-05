@@ -5,5 +5,5 @@
 #   - miniconda
 #   - node
 #   - firewall
-#   - { role: jupyterhub, become: yes }
+   - { role: jupyterhub, become: yes }
    - users

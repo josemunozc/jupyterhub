@@ -1,21 +1,27 @@
 c.Application.log_level = 10
 c.JupyterHub.spawner_class = 'sudospawner.SudoSpawner'
 c.SudoSpawner.sudospawner_path = '/opt/jupyterhub/bin/sudospawner'
-#c.JupyterHub.base_url = '/jupyter'
 # Make JupyterLab the default
 c.Spawner.default_url = '/lab'
 c.ConfigurableHTTPProxy.command = '/opt/jupyterhub/bin/configurable-http-proxy'
 
 # Authenticator
-# PAM
-# c.PAMAuthenticator.open_sessions = False
+import os
+import subprocess
+import sys
+os.environ['OAUTH2_AUTHORIZE_URL']='https://iris-iam.stfc.ac.uk/authorize'
+os.environ['OAUTH_CALLBACK_URL']='http://<JH-IP>:<PORT>/hub/oauth_callback'
+os.environ['OAUTH2_TOKEN_URL']='https://iris-iam.stfc.ac.uk/token'
 
-# OAUTH
-c.JupyterHub.authenticator_class = "generic"
+from oauthenticator.generic import GenericOAuthenticator
+c.JupyterHub.authenticator_class = GenericOAuthenticator
 c.GenericOAuthenticator.login_service = 'IRIS IAM'
-c.GenericOAuthenticator.client_id = '8920ddf2-7083-4a2b-9726-d8429ea7b3da'
-c.GenericOAuthenticator.client_secret = 'AO5rR_iTqq3sOCgUJLvkAbV_Z0tx7dEDn_5WWg5uJEQdqfDcK92FqIdU519ZDwJwXB11nLujHAUCcylltGSJ-gg'
+c.GenericOAuthenticator.client_id = '<COPY_FROM_IRIS_IAM_CLIENT_REGISTRATION>' 
+c.GenericOAuthenticator.client_secret = '<COPY_FROM_IRIS_IAM_CLIENT_REGISTRATION>'
 c.GenericOAuthenticator.userdata_url = 'https://iris-iam.stfc.ac.uk/userinfo'
 c.GenericOAuthenticator.token_url = 'https://iris-iam.stfc.ac.uk/token'
+c.GenericOAuthenticator.userdata_method= 'GET'
+c.GenericOAuthenticator.userdata_params: {'state': 'state'}
 c.GenericOAuthenticator.username_key = 'preferred_username'
-c.GenericOAuthenticator.oauth_callback_url = 'https://<TOBEADDED>:8000/hub/oauth_callback'
+c.GenericOAuthenticator.oauth_callback_url = 'http://<JH-IP>:<PORT>/hub/oauth_callback'
+c.GenericOAuthenticator.allowed_groups = ['jupyterhub-da/stfccloud']

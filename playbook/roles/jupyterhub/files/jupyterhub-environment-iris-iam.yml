@@ -9,4 +9,4 @@ dependencies:
   - sudospawner
   - pip:
     - jhub_remote_user_authenticator
-    - oauthenticator
+    - "--editable=git+https://github.com/jupyterhub/oauthenticator.git@master"
